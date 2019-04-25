@@ -50,5 +50,22 @@ describe("CanvasUtils", () => {
       expect(ppm[4]).toEqual("0 0 0 0 0 0 0 128 0 0 0 0 0 0 0");
       expect(ppm[5]).toEqual("0 0 0 0 0 0 0 0 0 0 0 0 0 0 255");
     });
+
+    it("limits line length to 70", () => {
+      let canvas = initCanvas(10, 2, Color(1, 0.8, 0.6));
+      let ppm = canvas.saveToPPM().split("\n");
+      expect(ppm[3]).toEqual(
+        "255 204 153 255 204 153 255 204 153 255 204 153 255 204 153 255 204"
+      );
+      expect(ppm[4]).toEqual(
+        "153 255 204 153 255 204 153 255 204 153 255 204 153"
+      );
+      expect(ppm[5]).toEqual(
+        "255 204 153 255 204 153 255 204 153 255 204 153 255 204 153 255 204"
+      );
+      expect(ppm[6]).toEqual(
+        "153 255 204 153 255 204 153 255 204 153 255 204 153"
+      );
+    });
   });
 });
