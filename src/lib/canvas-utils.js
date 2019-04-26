@@ -43,16 +43,37 @@ export const CanvasUtils = ({ imgData, width, height }) => {
   };
 
   const saveToPPM = () => {
+    function findSafeLineEnd(line) {
+      let index = 70;
+
+      while (line[index] !== " ") {
+        index--;
+      }
+
+      return index;
+    }
+
     const header = `P3\n${width} ${height}\n${PPM_MAX_COLOR_VALUE}`;
-    let body = "";
     let rgbValues = data.map(colorToPPM_RGB);
+    let body = "";
 
     for (let i = 0; i < height; i++) {
-      let line = [];
+      let rgbs = [];
+
       for (let j = 0; j < width; j++) {
-        line.push(rgbValues[safe_xyToIndex(j, i)]);
+        rgbs.push(rgbValues[safe_xyToIndex(j, i)]);
       }
-      body += line.join(" ") + "\n";
+      let line = rgbs.join(" ");
+
+      if (line.length > 70) {
+        let lineEndIndex = findSafeLineEnd(line);
+        let splitLine1 = line.slice(0, lineEndIndex);
+        let splitLine2 = line.slice(lineEndIndex + 1);
+        body += splitLine1 + "\n";
+        body += splitLine2 + "\n";
+      } else {
+        body += line + "\n";
+      }
     }
 
     return `${header}\n${body}`;

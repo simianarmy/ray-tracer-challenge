@@ -67,5 +67,11 @@ describe("CanvasUtils", () => {
         "153 255 204 153 255 204 153 255 204 153 255 204 153"
       );
     });
+
+    it("ends with a newline character", () => {
+      let canvas = initCanvas(5, 3);
+      let ppm = canvas.saveToPPM();
+      expect(ppm[ppm.length - 1]).toEqual("\n");
+    });
   });
 });
