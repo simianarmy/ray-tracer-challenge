@@ -1,12 +1,13 @@
 import React from "react";
-import { Animation } from "./components/animation";
+
+import Project1 from "./project1";
 import "./App.css";
 
 function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <Animation />
+        <Project1 />
       </header>
     </div>
   );

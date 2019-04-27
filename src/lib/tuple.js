@@ -11,7 +11,12 @@ export const Tuple = (x, y, z, w) => {
     x: data[0],
     y: data[1],
     z: data[2],
-    w: data[3]
+    w: data[3],
+    toString: () => {
+      return `(${data[0].toFixed(2)}, ${data[1].toFixed(2)}, ${data[2].toFixed(
+        2
+      )}, ${data[3]})`;
+    }
   };
 };
 

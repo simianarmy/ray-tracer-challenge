@@ -22,6 +22,6 @@ export class Animation extends React.Component {
   }
 
   render() {
-    return <Canvas angle={this.state.angle} />;
+    return <Canvas angle={this.state.angle} {...this.props} />;
   }
 }
