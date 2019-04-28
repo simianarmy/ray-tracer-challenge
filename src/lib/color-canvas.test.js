@@ -1,7 +1,7 @@
-import { CanvasUtils } from "./canvas-utils";
+import { ColorCanvas } from "./color-canvas";
 import { Color } from "./color";
 
-describe("CanvasUtils", () => {
+describe("ColorCanvas", () => {
   function initData(w, h, initValue) {
     let data = new Array(w * h);
 
@@ -14,7 +14,7 @@ describe("CanvasUtils", () => {
 
   function initCanvas(w, h, initValue = Color(0, 0, 0)) {
     let data = initData(w, h, initValue);
-    return CanvasUtils({ imgData: data, width: w, height: h });
+    return new ColorCanvas(data, w, h);
   }
 
   beforeEach(() => {});

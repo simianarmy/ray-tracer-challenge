@@ -6,7 +6,6 @@ import {
   waitForElement
 } from "react-testing-library";
 import { Canvas } from "./canvas";
-import { CanvasUtils } from "../lib/canvas-utils";
 
 afterEach(cleanup);
 
