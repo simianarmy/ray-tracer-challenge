@@ -47,6 +47,10 @@ export class Canvas extends React.Component {
 
     //ctx.putImageData(rayCanvas.toHTML5CanvasImageData(), 0, 0);
     ctx.restore();
+
+    if (props.onSave) {
+      props.onSave(rayCanvas.saveToPPM());
+    }
   }
 
   render() {

@@ -9,6 +9,11 @@ import "./App.css";
 const TICK_MS = 250;
 
 class Animation extends React.Component {
+  saveCanvas = imgData => {
+    console.log("saving image");
+    this.setState({shouldSave: false});
+  }
+
   constructor(props) {
     super(props);
 
@@ -17,7 +22,8 @@ class Animation extends React.Component {
       environment: Environment(vector(0, -0.1, 0), vector(-0.01, 0, 0)),
       canvas: null,
       ticksUntilGround: 0,
-      hitGround: false
+      hitGround: false,
+      shouldSave: false
     };
     this.updateAnimationState = this.updateAnimationState.bind(this);
   }
@@ -46,10 +52,15 @@ class Animation extends React.Component {
     });
 
     if (new_projectiles[0].position.y > 0) {
-      this.rAF = requestAnimationFrame(this.updateAnimationState);
       //setTimeout(this.updateAnimationState, TICK_MS);
+      this.rAF = requestAnimationFrame(this.updateAnimationState);
     } else {
-      this.setState({ hitGround: true });
+      if (!this.state.hitGround) {
+        this.setState({ shouldSave: true, hitGround: true });
+        this.rAF = requestAnimationFrame(this.updateAnimationState);
+      } else {
+        this.setState({ hitGround: true });
+      }
     }
   }
 
@@ -58,12 +69,19 @@ class Animation extends React.Component {
   }
 
   render() {
+    const { shouldSave } = this.state;
+
     return (
       <div className="animation">
-        <Canvas {...this.props} objects={this.state.projectiles} />
+        <Canvas {...this.props} objects={this.state.projectiles} onSave={shouldSave ? this.saveCanvas : null}/>
         Ticks until ground: {this.state.ticksUntilGround}
         <br />
-        {this.state.hitGround && <h3>GROUND HIT</h3>}
+        {this.state.hitGround && (
+          <>
+          <h3>GROUND HIT</h3>
+          <div className="ppmdata"></div>
+          </>
+        )}
       </div>
     );
   }
