@@ -1,2 +1,3 @@
 // Floating point equality
-export const floatIsEqual = (f1, f2) => Math.abs(f1 - f2) < Number.EPSILON;
+export const INTERNAL_EPSILON = 0.00001;
+export const floatIsEqual = (f1, f2) => Math.abs(f1 - f2) < INTERNAL_EPSILON; // Number.EPSILON;
