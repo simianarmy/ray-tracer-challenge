@@ -39,9 +39,10 @@ export class Canvas extends React.Component {
 
     if (objects) {
       objects.forEach(o => {
-        //console.log("drawing red pixel at", o.position);
-        //rayCanvas.writePixel(o.position.x, o.position.y, Color(1, 0, 0));
-        ctx.fillRect(Math.round(o.position.x), this.height - Math.round(o.position.y), 3, 3);
+        if (rayCanvas.isInBounds(o.position.x, o.position.y)) {
+          rayCanvas.writePixel(Math.round(o.position.x), this.height - Math.round(o.position.y), Color(1, 0, 0));
+          ctx.fillRect(Math.round(o.position.x), this.height - Math.round(o.position.y), 3, 3);
+        }
       });
     }
 

@@ -49,7 +49,7 @@ export class ColorCanvas {
   }
 
   safe_xyToIndex(x, y) {
-    if (x < 0 || x >= this.width || y < 0 || y >= this.height) {
+    if (!this.isInBounds(x, y)) {
       throw new Error("writePixel x y out of bounds");
     }
 
@@ -63,6 +63,10 @@ export class ColorCanvas {
 
   getPixel(x, y) {
     return this.data[this.safe_xyToIndex(x, y)];
+  }
+
+  isInBounds(x, y) {
+    return (x >= 0 && x < this.width && y >= 0 && y < this.height);
   }
 
   // HTML5 canvas conversion functions
@@ -101,17 +105,18 @@ export class ColorCanvas {
       for (let j = 0; j < this.width; j++) {
         rgbs.push(rgbValues[this.safe_xyToIndex(j, i)]);
       }
+
       let line = rgbs.join(" ");
 
-      if (line.length > 70) {
+      while (line.length > 70) {
         let lineEndIndex = findSafeLineEnd(line);
         let splitLine1 = line.slice(0, lineEndIndex);
-        let splitLine2 = line.slice(lineEndIndex + 1);
+
         body += splitLine1 + "\n";
-        body += splitLine2 + "\n";
-      } else {
-        body += line + "\n";
+        line = line.slice(lineEndIndex + 1);
       }
+
+      body += line + "\n";
     }
 
     return `${header}\n${body}`;

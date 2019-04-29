@@ -10,8 +10,7 @@ const TICK_MS = 250;
 
 class Animation extends React.Component {
   saveCanvas = imgData => {
-    console.log("saving image");
-    this.setState({shouldSave: false});
+    this.setState({imgData, shouldSave: false});
   }
 
   constructor(props) {
@@ -23,7 +22,8 @@ class Animation extends React.Component {
       canvas: null,
       ticksUntilGround: 0,
       hitGround: false,
-      shouldSave: false
+      shouldSave: false,
+      imgData: null,
     };
     this.updateAnimationState = this.updateAnimationState.bind(this);
   }
@@ -79,7 +79,11 @@ class Animation extends React.Component {
         {this.state.hitGround && (
           <>
           <h3>GROUND HIT</h3>
-          <div className="ppmdata"></div>
+          {this.state.imgData && (
+              <div className="ppmdata">
+              <textarea rows="20" cols="60" value={this.state.imgData}></textarea>
+              </div>
+          )}
           </>
         )}
       </div>
