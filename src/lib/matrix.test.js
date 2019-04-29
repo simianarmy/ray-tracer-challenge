@@ -175,6 +175,25 @@ describe("Matrix", () => {
       expect(tupleEquals(expected, actual)).toBeTruthy();
     });
 
+    it("the identity with a tuple returns the tuple", () => {
+      const t = Tuple(2, 3, 4, 1);
+      const it = multiplyTuple(Matrix.identity, t);
+      expect(tupleEquals(it, t)).toBeTruthy();
+    });
+
+    xit("modified identity with a tuple returns ...", () => {
+      const t = Tuple(2, 3, 4, 1);
+      let im = Matrix.initFromArray([
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [0, 0, 0, 1]
+      ]);
+      const it = multiplyTuple(im, t);
+      //console.log(it.toString());
+      // not sure what it's really doing here?
+    });
+
     it("with the identity matrix returns the original", () => {
       const m = Matrix.initFromArray([
         [1, 2, 3, 4],
@@ -184,6 +203,17 @@ describe("Matrix", () => {
       ]);
       const im = Matrix.identity;
       expect(m).toEqualMatrix(multiply(m, im));
+    });
+
+    it("a matrix with its inverse produces an identity matrix", () => {
+      const m = Matrix.initFromArray([
+        [6, 4, 4, 4],
+        [5, 5, 7, 6],
+        [4, -9, 3, -7],
+        [9, 1, 7, -6]
+      ]);
+      const res = multiply(m, inverse(m));
+      expect(res).toEqualMatrix(Matrix.identity);
     });
   });
 
@@ -380,6 +410,23 @@ describe("Matrix", () => {
       const c = multiply(a, b);
       const expected = multiply(c, inverse(b));
       expect(expected).toEqualMatrix(a);
+    });
+
+    it("of the identity matrix should produce identity matrix", () => {
+      const ii = inverse(Matrix.identity);
+      expect(ii).toEqualMatrix(Matrix.identity);
+    });
+
+    it("of a transpose is the same as the transpose of an inverse", () => {
+      const m = Matrix.initFromArray([
+        [8, 2, 2, 2],
+        [3, -1, 7, 0],
+        [7, 0, 5, 4],
+        [6, -2, 0, 5]
+      ]);
+      expect(m).toBeInvertible();
+      const itm = inverse(transpose(m));
+      expect(itm).toEqualMatrix(transpose(inverse(m)));
     });
   });
 });
