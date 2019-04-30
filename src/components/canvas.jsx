@@ -42,7 +42,6 @@ export class Canvas extends React.Component {
         if (rayCanvas.isInBounds(o.position.x, o.position.y)) {
           const x = Math.round(o.position.x);
           const y = this.height - Math.round(o.position.y) - 1;
-          console.log(x, y);
 
           rayCanvas.writePixel(x, y, Color(1, 0, 0));
           ctx.fillRect(x, y, 4, 4);

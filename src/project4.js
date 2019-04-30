@@ -4,7 +4,6 @@ import { Canvas } from "./components/canvas";
 import { point } from "./lib/tuple";
 import { multiplyTuple } from "./lib/matrix";
 import { rotationZ, scaling, translation } from "./lib/transformations";
-import { degreesToRadians } from "./lib/math";
 import "./App.css";
 
 class Animation extends React.Component {
@@ -31,20 +30,6 @@ class Animation extends React.Component {
         position: multiplyTuple(translate, multiplyTuple(scale, p))
       });
     }
-    let minX = Math.min(...hours.map(h => h.position.x));
-    let minY = Math.min(...hours.map(h => h.position.y));
-
-    // normalize points
-    /*
-    hours = hours.map(h => {
-      return {
-        position: {
-          x: h.position.x + -minX,
-          y: h.position.y + -minY
-        }
-      };
-    });
-    */
 
     this.state = {
       hourPoints: hours,
@@ -61,10 +46,6 @@ class Animation extends React.Component {
   }
 
   updateAnimationState() {
-    let { hourPoints } = this.state;
-
-    //this.setState({});
-
     this.rAF = requestAnimationFrame(this.updateAnimationState);
   }
 
