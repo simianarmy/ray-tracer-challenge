@@ -1,4 +1,11 @@
-import { translation, scaling, rotationX, rotationY, rotationZ } from "./transformations";
+import {
+  translation,
+  scaling,
+  rotationX,
+  rotationY,
+  rotationZ,
+  shearing
+} from "./transformations";
 import { multiply, multiplyTuple, inverse } from "./matrix";
 import { point, vector, equals } from "./tuple";
 
@@ -93,5 +100,77 @@ describe("rotating", () => {
     expect(equals(expected1, multiplyTuple(half_quarter, p))).toBeTruthy();
     const expected2 = point(-1, 0, 0);
     expect(equals(expected2, multiplyTuple(full_quarter, p))).toBeTruthy();
+  });
+});
+
+describe("shearing", () => {
+  it("moves x in proportion to y", () => {
+    const transform = shearing(1, 0, 0, 0, 0, 0);
+    const p = point(2, 3, 4);
+    const expected = point(5, 3, 4);
+    expect(equals(expected, multiplyTuple(transform, p))).toBeTruthy();
+  });
+
+  it("moves x in proportion to z", () => {
+    const transform = shearing(0, 1, 0, 0, 0, 0);
+    const p = point(2, 3, 4);
+    const expected = point(6, 3, 4);
+    expect(equals(expected, multiplyTuple(transform, p))).toBeTruthy();
+  });
+
+  it("moves y in proportion to x", () => {
+    const transform = shearing(0, 0, 1, 0, 0, 0);
+    const p = point(2, 3, 4);
+    const expected = point(2, 5, 4);
+    expect(equals(expected, multiplyTuple(transform, p))).toBeTruthy();
+  });
+
+  it("moves y in proportion to z", () => {
+    const transform = shearing(0, 0, 0, 1, 0, 0);
+    const p = point(2, 3, 4);
+    const expected = point(2, 7, 4);
+    expect(equals(expected, multiplyTuple(transform, p))).toBeTruthy();
+  });
+
+  it("moves z in proportion to x", () => {
+    const transform = shearing(0, 0, 0, 0, 1, 0);
+    const p = point(2, 3, 4);
+    const expected = point(2, 3, 6);
+    expect(equals(expected, multiplyTuple(transform, p))).toBeTruthy();
+  });
+
+  it("moves z in proportion to y", () => {
+    const transform = shearing(0, 0, 0, 0, 0, 1);
+    const p = point(2, 3, 4);
+    const expected = point(2, 3, 7);
+    expect(equals(expected, multiplyTuple(transform, p))).toBeTruthy();
+  });
+});
+
+describe("chaining", () => {
+  it("individual transformations applied in sequence should work", () => {
+    const p = point(1, 0, 1);
+    const A = rotationX(Math.PI / 2);
+    const B = scaling(5, 5, 5);
+    const C = translation(10, 5, 7);
+
+    const p2 = multiplyTuple(A, p);
+    expect(equals(p2, point(1, -1, 0))).toBeTruthy();
+
+    const p3 = multiplyTuple(B, p2);
+    expect(equals(p3, point(5, -5, 0))).toBeTruthy();
+
+    const p4 = multiplyTuple(C, p3);
+    expect(equals(p4, point(15, 0, 7))).toBeTruthy();
+  });
+
+  it("transformations must be applied in reverse order", () => {
+    const p = point(1, 0, 1);
+    const A = rotationX(Math.PI / 2);
+    const B = scaling(5, 5, 5);
+    const C = translation(10, 5, 7);
+    const T = multiply(multiply(C, B), A);
+    const expected = point(15, 0, 7);
+    expect(equals(expected, multiplyTuple(T, p)));
   });
 });

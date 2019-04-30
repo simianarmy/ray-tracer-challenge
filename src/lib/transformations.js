@@ -44,3 +44,12 @@ export const rotationZ = r => {
     [0, 0, 0, 1]
   ]);
 };
+
+export const shearing = (xy, xz, yx, yz, zx, zy) => {
+  return Matrix.initFromArray([
+    [1, xy, xz, 0],
+    [yx, 1, yz, 0],
+    [zx, zy, 1, 0],
+    [0, 0, 0, 1]
+  ]);
+};
