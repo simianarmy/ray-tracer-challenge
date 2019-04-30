@@ -1,13 +1,13 @@
 import React from "react";
 
-import Project2 from "./project2";
+import Project4 from "./project4";
 import "./App.css";
 
 function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <Project2 />
+        <Project4 />
       </header>
     </div>
   );

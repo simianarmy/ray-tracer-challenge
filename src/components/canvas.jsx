@@ -23,7 +23,7 @@ export class Canvas extends React.Component {
     const height = canvas.height;
     const rayCanvas = ColorCanvas.initFromHTMLCanvasContext(ctx, width, height);
 
-    this.setState({rayCanvas});
+    this.setState({ rayCanvas });
   }
 
   componentDidUpdate(props) {
@@ -35,13 +35,19 @@ export class Canvas extends React.Component {
     const canvas = this.canvasRef.current;
     const ctx = canvas.getContext("2d");
     ctx.save();
-    ctx.fillStyle = 'rgb(255,0,0)';
+    ctx.fillStyle = "rgb(255,0,0)";
 
     if (objects) {
       objects.forEach(o => {
         if (rayCanvas.isInBounds(o.position.x, o.position.y)) {
-          rayCanvas.writePixel(Math.round(o.position.x), this.height - Math.round(o.position.y), Color(1, 0, 0));
-          ctx.fillRect(Math.round(o.position.x), this.height - Math.round(o.position.y), 3, 3);
+          const x = Math.round(o.position.x);
+          const y = this.height - Math.round(o.position.y) - 1;
+          console.log(x, y);
+
+          rayCanvas.writePixel(x, y, Color(1, 0, 0));
+          ctx.fillRect(x, y, 4, 4);
+        } else {
+          console.warn("out of bounds", o.position);
         }
       });
     }
