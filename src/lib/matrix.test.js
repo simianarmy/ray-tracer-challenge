@@ -14,40 +14,6 @@ import {
   inverse
 } from "./matrix";
 
-expect.extend({
-  toEqualMatrix(received, expected) {
-    const passed = equals(received, expected);
-
-    if (passed) {
-      return {
-        pass: true,
-        message: () => `expected ${received} not to be equal to ${expected}`
-      };
-    } else {
-      return {
-        pass: false,
-        message: () => `expected ${received} to be equal to ${expected}`
-      };
-    }
-  },
-
-  toBeInvertible(received) {
-    const passed = isInvertible(received);
-
-    if (passed) {
-      return {
-        pass: true,
-        message: () => `expected ${received} not to be invertible`
-      };
-    } else {
-      return {
-        pass: false,
-        message: () => `expected ${received} to be invertible`
-      };
-    }
-  }
-});
-
 describe("Matrix", () => {
   describe("create", () => {
     it("should initialize a N X M matrix with default values", () => {

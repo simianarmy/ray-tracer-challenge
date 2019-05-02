@@ -1,24 +1,7 @@
 import { point, vector, equals } from "./tuple";
-import { Ray, position, intersect } from "./ray";
+import { Ray, position, intersect, transform } from "./ray";
 import { Sphere } from "./sphere";
-
-expect.extend({
-  toEqualPoint(received, expected) {
-    const passed = equals(received, expected);
-
-    if (passed) {
-      return {
-        pass: true,
-        message: () => `expected ${received} not to be equal to ${expected}`
-      };
-    } else {
-      return {
-        pass: false,
-        message: () => `expected ${received} to be equal to ${expected}`
-      };
-    }
-  }
-});
+import { scaling, translation } from "./transformations";
 
 describe("Ray", () => {
   it("represents point and origin", () => {
@@ -80,5 +63,23 @@ describe("Ray", () => {
       const s = Sphere();
       const xs = intersect(s, r);
       expect(xs.length).toBe(0);
+  });
+
+  describe("transforms", () => {
+    it("with translation yields moved ray", () => {
+      const r = Ray(point(1, 2, 3), vector(0, 1, 0));
+      const m = translation(3, 4, 5);
+      const r2 = transform(r, m);
+      expect(r2.origin).toEqualPoint(point(4, 6, 8));
+      expect(r2.direction).toEqualPoint(vector(0, 1, 0));
+    });
+
+    it("with scaling yields scaled ray", () => {
+      const r = Ray(point(1, 2, 3), vector(0, 1, 0));
+      const m = scaling(2, 3, 4);
+      const r2 = transform(r, m);
+      expect(r2.origin).toEqualPoint(point(2, 6, 12));
+      expect(r2.direction).toEqualPoint(vector(0, 3, 0));
+    });
   });
 });
