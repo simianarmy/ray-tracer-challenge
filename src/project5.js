@@ -38,7 +38,6 @@ class Animation extends React.Component {
         const xs = intersect(sphere, ray);
         // if intersections, color the pixel
         if (xs.length > 0) {
-          console.log("intersections", xs);
           canvas.writePixel(x, y, sphereColor);
         }
       }
@@ -81,7 +80,7 @@ class Animation extends React.Component {
     return this.state.ready ? (
       <div>
         <div className="ppmdata">
-          <textarea rows="20" cols="60" value={this.state.imgData} />
+          <textarea rows="20" cols="60" readOnly value={this.state.imgData} />
         </div>
       </div>
     ) : (
