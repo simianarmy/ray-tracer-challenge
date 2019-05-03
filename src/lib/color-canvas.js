@@ -56,6 +56,12 @@ export class ColorCanvas {
     return x + this.width * y;
   }
 
+  indexToXY(i) {
+    const x = Math.floor(i % this.width);
+    const y = Math.floor(i / this.width);
+    return [x, y];
+  }
+
   // Pixel functions
   writePixel(x, y, color) {
     this.data[this.safe_xyToIndex(x, y)] = color;
