@@ -1,59 +1,71 @@
 import React from "react";
 
 import { ColorCanvas } from "./lib/color-canvas";
-import { point, vector, sub } from "./lib/tuple";
+import { point, vector, sub, normalize } from "./lib/tuple";
 import { Ray, intersect } from "./lib/ray";
 import { Sphere } from "./lib/sphere";
 import { Color } from "./lib/color";
 import "./App.css";
 
-const Black = Color(0, 0, 0);
+const ColorBlack = Color(0, 0, 0);
 
 class Animation extends React.Component {
   castRays() {
-    const { canvas, canvasPixels, lightSource, sphere, sphereColor, wallZ } = this.state;
+    const {
+      canvas,
+      canvasPixels,
+      pixelSize,
+      lightSource,
+      sphere,
+      sphereColor,
+      wallSize,
+      wallZ
+    } = this.state;
 
-    for (let i=0; i<canvasPixels; i++) {
-      for (let j=0; j<canvasPixels; j++) {
+    const half = wallSize / 2;
+
+    for (let y = 0; y < canvasPixels; y++) {
+      // compute the world y coordinate (top = +half, bottom = -half)
+      let worldY = half - pixelSize * y;
+
+      for (let x = 0; x < canvasPixels; x++) {
+        let worldX = -half + pixelSize * x;
+
         // cast ray from lightsource to pixel on wall
-        const wallPoint = point(i, j, wallZ);
-        console.log("wall point", wallPoint);
+        const wallPoint = point(worldX, worldY, wallZ);
         const lightToPixelVec = sub(wallPoint, lightSource.origin);
-        console.log("light to pixel", i, j, lightToPixelVec);
-        const ray = Ray(lightSource, lightToPixelVec);
+        const ray = Ray(lightSource.origin, normalize(lightToPixelVec));
         const xs = intersect(sphere, ray);
         // if intersections, color the pixel
         if (xs.length > 0) {
-          canvas.writePixel(i, j, sphereColor);
-        } else {
-          // otherwise pixel is black
-          canvas.writePixel(i, j, Black);
+          console.log("intersections", xs);
+          canvas.writePixel(x, y, sphereColor);
         }
       }
     }
 
-    this.setState({ready: true, imgData: canvas.saveToPPM()});
+    this.setState({ ready: true, imgData: canvas.saveToPPM() });
   }
 
   constructor(props) {
     super(props);
 
-    const lightSource = Ray(point(0, 0, -5), vector(0, 0, 1));
+    const lightSource = Ray(point(0, 0, -10), vector(0, 0, 1));
     const wallZ = 10;
     const wallSize = 7;
     const canvasPixels = 100;
     const pixelSize = wallSize / canvasPixels;
-    const sphere = Sphere();
-    let wallCanvas = new ColorCanvas(new Array(canvasPixels * canvasPixels), canvasPixels, canvasPixels);
+    const sphere = Sphere(); // unit sphere at origin
+    let wallCanvas = new ColorCanvas(canvasPixels, canvasPixels, ColorBlack);
 
     this.state = {
       canvas: wallCanvas,
+      canvasPixels,
       lightSource,
       sphere,
       sphereColor: Color(1, 0, 0),
       wallZ,
       wallSize,
-      canvasPixels,
       pixelSize,
       imgData: null,
       ready: false,
@@ -66,14 +78,14 @@ class Animation extends React.Component {
   }
 
   render() {
-    return (
-      this.state.ready ? (
+    return this.state.ready ? (
       <div>
         <div className="ppmdata">
           <textarea rows="20" cols="60" value={this.state.imgData} />
         </div>
       </div>
-      ) : <h1>Generating...</h1>
+    ) : (
+      <h1>Generating...</h1>
     );
   }
 }

@@ -4,7 +4,7 @@
 import { Color } from "./color";
 
 const PPM_MAX_COLOR_VALUE = 255;
-const scaleColorToPPM = (val) => {
+const scaleColorToPPM = val => {
   const v = Math.round(val * PPM_MAX_COLOR_VALUE);
 
   if (v < 0) {
@@ -13,7 +13,7 @@ const scaleColorToPPM = (val) => {
 
   return Math.min(v, PPM_MAX_COLOR_VALUE);
 };
-const colorToPPM_RGB = (c) => {
+const colorToPPM_RGB = c => {
   const r = scaleColorToPPM(c.red);
   const g = scaleColorToPPM(c.green);
   const b = scaleColorToPPM(c.blue);
@@ -21,27 +21,32 @@ const colorToPPM_RGB = (c) => {
 };
 
 export class ColorCanvas {
-// Convert HTML5 2dcanvas
+  // Convert HTML5 2dcanvas
   static initFromHTMLCanvasContext = (ctx, width, height) => {
+    let canvas = new ColorCanvas(width, height);
+
     const imageData = ctx.getImageData(0, 0, width, height);
-    // convert RGBA pixel values to color tuples
-    let convertedPixels = new Array(width * height);
     let data = imageData.data;
 
-    for (let i=0, idx=0; i<data.length; i+=4, idx++) {
+    for (let idx = 0; idx < data.length; idx++) {
+      // convert RGBA pixel values to color tuples
       const red = data[idx];
-      const green = data[idx+1];
-      const blue = data[idx+2];
-      convertedPixels[idx] = Color(red, green, blue);
+      const green = data[idx + 1];
+      const blue = data[idx + 2];
+      canvas.data[idx] = Color(red, green, blue);
     }
 
-    return new ColorCanvas(convertedPixels, width, height);
-  }
+    return canvas;
+  };
 
-  constructor(imgData, width, height) {
-    this.data = imgData;
+  constructor(width, height, initValue = Color(0, 0, 0)) {
+    this.data = new Array(width * height);
     this.width = width;
     this.height = height;
+
+    for (let idx = 0; idx < this.data.length; idx++) {
+      this.data[idx] = initValue;
+    }
   }
 
   getData() {
@@ -72,23 +77,23 @@ export class ColorCanvas {
   }
 
   isInBounds(x, y) {
-    return (x >= 0 && x < this.width && y >= 0 && y < this.height);
+    return x >= 0 && x < this.width && y >= 0 && y < this.height;
   }
 
   // HTML5 canvas conversion functions
 
   toHTML5CanvasImageData() {
-    let pixels = new Uint8ClampedArray (this.width * this.height * 4);
+    let pixels = new Uint8ClampedArray(this.width * this.height * 4);
 
-    for (let i=0, pi=0; i<this.data.length; i++, pi+=4) {
+    for (let i = 0, pi = 0; i < this.data.length; i++, pi += 4) {
       pixels[pi] = this.data[i].red;
-      pixels[pi+1] = this.data[i].green;
-      pixels[pi+2] = this.data[i].blue;
-      pixels[pi+3] = 0;
+      pixels[pi + 1] = this.data[i].green;
+      pixels[pi + 2] = this.data[i].blue;
+      pixels[pi + 3] = 0;
     }
 
     return new ImageData(pixels, this.width, this.height);
-  };
+  }
 
   saveToPPM() {
     function findSafeLineEnd(line) {
@@ -128,4 +133,3 @@ export class ColorCanvas {
     return `${header}\n${body}`;
   }
 }
-

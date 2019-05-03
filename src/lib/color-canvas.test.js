@@ -13,8 +13,7 @@ describe("ColorCanvas", () => {
   }
 
   function initCanvas(w, h, initValue = Color(0, 0, 0)) {
-    let data = initData(w, h, initValue);
-    return new ColorCanvas(data, w, h);
+    return new ColorCanvas(w, h, initValue);
   }
 
   beforeEach(() => {});

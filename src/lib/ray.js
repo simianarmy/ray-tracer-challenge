@@ -14,6 +14,7 @@ export const Ray = (origin, direction) => {
 };
 
 /**
+ * Calculates position of a ray at time t
  * @returns {Point}
  */
 export const position = (ray, t) => {
@@ -21,9 +22,10 @@ export const position = (ray, t) => {
 };
 
 /**
+ * Calculates intersections of a sphere with a ray
  * @param {Sphere} s
  * @param {Ray} r
- * @returns {Array[Number]}
+ * @returns {Array[Intersection]}
  */
 export const intersect = (s, r) => {
   const ray2 = transform(r, inverse(s.getTransform()));
