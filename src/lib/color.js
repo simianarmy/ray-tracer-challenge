@@ -6,6 +6,12 @@ export const Color = (r, g, b) => {
   return { ...p, red: p.x, green: p.y, blue: p.z };
 };
 
+Color.Black = Color(0, 0, 0);
+Color.Red = Color(1, 0, 0);
+Color.Green = Color(0, 1, 0);
+Color.Blue = Color(0, 0, 1);
+Color.White = Color(1, 1, 1);
+
 export const add = (c1, c2) => {
   const c = tadd(c1, c2);
   return Color(c.x, c.y, c.z);

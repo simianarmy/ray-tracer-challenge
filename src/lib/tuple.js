@@ -68,6 +68,9 @@ export const normalize = t => {
   return Tuple(t.x / mag, t.y / mag, t.z / mag, t.w / mag);
 };
 
+/**
+ * @returns {Number}
+ */
 export const dot = (t1, t2) =>
   t1.x * t2.x + t1.y * t2.y + t1.z * t2.z + t1.w * t2.w;
 
