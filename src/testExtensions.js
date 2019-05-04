@@ -1,36 +1,29 @@
 import { equals as tequals } from "./lib/tuple";
 import { equals, isInvertible } from "./lib/matrix";
 
+const toEqualTuple = (received, expected) => {
+  const passed = tequals(received, expected);
+
+  if (passed) {
+    return {
+      pass: true,
+      message: () => `expected ${received} not to be equal to ${expected}`
+    };
+  } else {
+    return {
+      pass: false,
+      message: () => `expected ${received} to be equal to ${expected}`
+    };
+  }
+};
+
 expect.extend({
+  toEqualTuple,
   toEqualPoint(received, expected) {
-    const passed = tequals(received, expected);
-
-    if (passed) {
-      return {
-        pass: true,
-        message: () => `expected ${received} not to be equal to ${expected}`
-      };
-    } else {
-      return {
-        pass: false,
-        message: () => `expected ${received} to be equal to ${expected}`
-      };
-    }
+    return toEqualTuple(received, expected);
   },
-  toEqualTuple(received, expected) {
-    const passed = tequals(received, expected);
-
-    if (passed) {
-      return {
-        pass: true,
-        message: () => `expected ${received} not to be equal to ${expected}`
-      };
-    } else {
-      return {
-        pass: false,
-        message: () => `expected ${received} to be equal to ${expected}`
-      };
-    }
+  toEqualColor(received, expected) {
+    return toEqualTuple(received, expected);
   },
   toEqualMatrix(received, expected) {
     const passed = equals(received, expected);

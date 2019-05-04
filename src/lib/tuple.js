@@ -77,3 +77,12 @@ export const cross = (t1, t2) =>
     t1.z * t2.x - t1.x * t2.z,
     t1.x * t2.y - t1.y * t2.x
   );
+
+/**
+ * @param {Vector} v,
+ * @param {Vector} normal
+ * @returns {Vector}
+ */
+export const reflect = (v, normal) => {
+  return sub(v, multiply(multiply(normal, 2), dot(v, normal)));
+};

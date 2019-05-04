@@ -3,6 +3,7 @@ import { point, vector, normalize } from "./tuple";
 import { Ray, intersect } from "./ray";
 import { Matrix, multiply } from "./matrix";
 import { scaling, translation, rotationZ } from "./transformations";
+import { Material } from "./material";
 
 describe("Sphere", () => {
   let s;
@@ -89,6 +90,19 @@ describe("Sphere", () => {
       s.setTransform(m);
       const n = normalAt(s, point(0, Math.sqrt(2) / 2, -Math.sqrt(2) / 2));
       expect(n).toEqualTuple(vector(0, 0.97014, -0.24254));
+    });
+  });
+
+  describe("material", () => {
+    it("should have defaults", () => {
+      expect(s.material).toEqual(Material());
+    });
+
+    it("should be assignable", () => {
+      let m = Material();
+      m.ambient = 1;
+      s.material = m;
+      expect(s.material.ambient).toBe(m.ambient);
     });
   });
 });

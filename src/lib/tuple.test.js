@@ -10,6 +10,7 @@ import {
   divide,
   magnitude,
   normalize,
+  reflect,
   dot,
   cross,
   isPoint,
@@ -164,6 +165,22 @@ describe("Tuple", () => {
       const b = vector(2, 3, 4);
       expect(equals(cross(a, b), vector(-1, 2, -1))).toBeTruthy();
       expect(equals(cross(b, a), vector(1, -2, 1))).toBeTruthy();
+    });
+  });
+
+  describe("reflecting", () => {
+    it("a vector approaching at 45 degrees should emerge at 45 degrees with y reversed", () => {
+      const v = vector(1, -1, 0);
+      const n = vector(0, 1, 0);
+      const r = reflect(v, n);
+      expect(r).toEqualTuple(vector(1, 1, 0));
+    });
+
+    it("a vector off a slanted surface should work", () => {
+      const v = vector(0, -1, 0);
+      const n = vector(Math.sqrt(2) / 2, Math.sqrt(2) / 2, 0);
+      const r = reflect(v, n);
+      expect(r).toEqualTuple(vector(1, 0, 0));
     });
   });
 });
