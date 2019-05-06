@@ -1,5 +1,7 @@
-import { Intersection, intersections, hit } from "./intersection";
+import { Intersection, intersections, hit, prepareComputations } from "./intersection";
 import { Sphere } from "./sphere";
+import { Ray, intersect } from "./ray";
+import { point, vector } from "./tuple";
 
 describe("Intersection", () => {
   it("should encapsulate t and an object", () => {
@@ -61,5 +63,19 @@ describe("hit", () => {
       const i4 = Intersection(2, s);
       const xs = intersections(i1, i2, i3, i4);
       expect(hit(xs)).toEqual(i4);
+  });
+
+  describe("precomputing the state of", () => {
+    it("should return precomputed values", () => {
+      const r = Ray(point(0, 0, -5), vector(0, 0, 1));
+      const shape = Sphere();
+      const i = intersect(shape, r);
+      const comps = prepareComputations(i, r);
+      expect(comps.t).toBe(i.t);
+      expect(comps.object).toEqual(i.object);
+      expect(comps.point).toEqualPoint(point(0, 0, -1));
+      expect(comps.eyev).toEqualVector(vector(0, 0, -1));
+      expect(comps.normalv).toEqualVector(vector(0, 0, -1));
+    });
   });
 });

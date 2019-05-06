@@ -1,3 +1,7 @@
+import { normalAt } from "./sphere";
+import { position } from "./ray";
+import { negate } from "./tuple";
+
 export const Intersection = (t, object) => {
   return {
     t,
@@ -28,3 +32,18 @@ export const hit = is => {
 
   return minIndex === -1 ? null : is[minIndex];
 };
+
+/**
+ * @returns {Object}
+ */
+export const prepareComputations = (is, ray) => {
+  const point = position(ray, is.t);
+
+  return {
+    t: is.t,
+    object: is.object,
+    point,
+    eyev: negate(ray.direction),
+    normalv: normalAt(is.object, point)
+  };
+}

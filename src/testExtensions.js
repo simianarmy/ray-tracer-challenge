@@ -54,5 +54,5 @@ expect.extend({
         message: () => `expected ${received} to be invertible`
       };
     }
-  }
+  },
 });
