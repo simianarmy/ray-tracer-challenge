@@ -4,6 +4,8 @@ import { Color } from "./color";
 import { Sphere } from "./sphere";
 import { intersect } from "./ray";
 import { scaling } from "./transformations";
+import { lighting } from "./material";
+import { hit, prepareComputations } from "./intersection";
 
 export const World = () => {
   return {
@@ -45,4 +47,28 @@ export const intersectWorld = (world, ray) => {
   return intersections.sort((ia, ib) => {
     return ia.t < ib.t ? -1 : (ia.t > ib.t) ? 1 : 0;
   });
+};
+
+/**
+ * @param {World} world
+ * @param {Object} comps
+ * @returns {Color}
+ */
+export const shadeHit = (world, comps) => {
+  return lighting(comps.object.material, world.lightSource, comps.point, comps.eyev, comps.normalv);
+};
+
+/**
+ * @returns {Color}
+ */
+export const colorAt = (world, ray) => {
+  const xs = intersectWorld(world, ray);
+  const is = hit(xs);
+
+  if (!is) {
+    return Color.Black;
+  }
+
+  const comps = prepareComputations(is, ray);
+  return shadeHit(world, comps);
 };

@@ -1,6 +1,6 @@
 import { normalAt } from "./sphere";
 import { position } from "./ray";
-import { negate } from "./tuple";
+import { dot, negate } from "./tuple";
 
 export const Intersection = (t, object) => {
   return {
@@ -17,33 +17,45 @@ export const intersections = (...is) => {
 };
 
 /**
+ * @param {Array[Intersections]}
  * @returns {Intersection}
  */
-export const hit = is => {
+export const hit = xs => {
   let minT = Number.MAX_VALUE;
   let minIndex = -1;
 
-  for (let i = 0; i < is.length; i++) {
-    if (is[i].t >= 0 && is[i].t < minT) {
-      minT = is[i].t;
+  for (let i = 0; i < xs.length; i++) {
+    if (xs[i].t >= 0 && xs[i].t < minT) {
+      minT = xs[i].t;
       minIndex = i;
     }
   }
 
-  return minIndex === -1 ? null : is[minIndex];
+  return minIndex === -1 ? null : xs[minIndex];
 };
 
 /**
+ * @param {Intersection} is
+ * @param {Ray} ray
  * @returns {Object}
  */
 export const prepareComputations = (is, ray) => {
   const point = position(ray, is.t);
 
-  return {
+  let comps = {
     t: is.t,
     object: is.object,
     point,
     eyev: negate(ray.direction),
     normalv: normalAt(is.object, point)
   };
+
+  if (dot(comps.normalv, comps.eyev) < 0) {
+    comps.inside = true;
+    comps.normalv = negate(comps.normalv);
+  } else {
+    comps.inside = false;
+  }
+
+  return comps;
 }

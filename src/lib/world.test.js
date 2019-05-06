@@ -1,10 +1,11 @@
-import { World, intersectWorld } from "./world";
+import { World, colorAt, intersectWorld, shadeHit } from "./world";
 import { point, vector } from "./tuple";
 import { PointLight } from "./light";
 import { Color } from "./color";
 import { Sphere } from "./sphere";
 import { Ray } from "./ray";
 import { scaling } from "./transformations";
+import { Intersection, prepareComputations } from "./intersection";
 
 describe("World", () => {
   it("constructor with no arguments yields no objects or lights", () => {
@@ -52,4 +53,55 @@ describe("World", () => {
       expect(xs[3].t).toBe(6);
     });
   });
+
+  describe("shading an intersection", () => {
+    it("shadeHit should return the correct outside color", () => {
+      const w = World.Default();
+      const r = Ray(point(0, 0, -5), vector(0, 0, 1));
+      const shape = w.objects[0];
+      const is = Intersection(4, shape);
+      const comps = prepareComputations(is, r);
+      const expected = shadeHit(w, comps);
+      expect(expected).toEqualColor(Color(0.38066, 0.47583, 0.2855));
+    });
+
+    it("shadeHit should return the correct inside color", () => {
+      const w = World.Default();
+      w.lightSource = PointLight(point(0, 0.25, 0), Color(1, 1, 1));
+      const r = Ray(point(0, 0, 0), vector(0, 0, 1));
+      const shape = w.objects[1];
+      const is = Intersection(0.5, shape);
+      const comps = prepareComputations(is, r);
+      const expected = shadeHit(w, comps);
+      expect(expected).toEqualColor(Color(0.90498, 0.90498, 0.90498));
+    });
+  });
+
+  describe("colorAt", () => {
+    it("when ray missed should be black", () => {
+      const w = World.Default();
+      const r = Ray(point(0, 0, -5), vector(0, 1, 0));
+      const expected = colorAt(w, r);
+      expect(expected).toEqualColor(Color.Black);
+    });
+
+    it("when ray hits", () => {
+      const w = World.Default();
+      const r = Ray(point(0, 0, -5), vector(0, 0, 1));
+      const expected = colorAt(w, r);
+      expect(expected).toEqualColor(Color(0.38066, 0.47583, 0.2855));
+    });
+
+    it("when intersection behind ray", () => {
+      const w = World.Default();
+      const outer = w.objects[0];
+      outer.material.ambient = 1;
+      const inner = w.objects[1];
+      inner.material.ambient = 1;
+
+      const r = Ray(point(0, 0, 0.75), vector(0, 0, -1));
+      const expected = colorAt(w, r);
+      expect(expected).toEqualColor(inner.material.color);
+    });
+  })
 });

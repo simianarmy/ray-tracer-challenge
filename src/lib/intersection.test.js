@@ -69,12 +69,31 @@ describe("hit", () => {
     it("should return precomputed values", () => {
       const r = Ray(point(0, 0, -5), vector(0, 0, 1));
       const shape = Sphere();
-      const i = intersect(shape, r);
-      const comps = prepareComputations(i, r);
-      expect(comps.t).toBe(i.t);
-      expect(comps.object).toEqual(i.object);
+      const is = Intersection(4, shape);
+      const comps = prepareComputations(is, r);
+      expect(comps.t).toBe(is.t);
+      expect(comps.object).toEqual(is.object);
       expect(comps.point).toEqualPoint(point(0, 0, -1));
       expect(comps.eyev).toEqualVector(vector(0, 0, -1));
+      expect(comps.normalv).toEqualVector(vector(0, 0, -1));
+    });
+
+    it("should set inside property to false when hit intersection occurs on outside", () => {
+      const r = Ray(point(0, 0, -5), vector(0, 0, 1));
+      const shape = Sphere();
+      const is = Intersection(4, shape);
+      const comps = prepareComputations(is, r);
+      expect(comps.inside).not.toBeTruthy();
+    });
+
+    it("should set inside property to true when hit intersection occurs on inside", () => {
+      const r = Ray(point(0, 0, 0), vector(0, 0, 1));
+      const shape = Sphere();
+      const is = Intersection(1, shape);
+      const comps = prepareComputations(is, r);
+      expect(comps.point).toEqualPoint(point(0, 0, 1));
+      expect(comps.eyev).toEqualVector(vector(0, 0, -1));
+      expect(comps.inside).toBeTruthy();
       expect(comps.normalv).toEqualVector(vector(0, 0, -1));
     });
   });

@@ -22,6 +22,9 @@ expect.extend({
   toEqualPoint(received, expected) {
     return toEqualTuple(received, expected);
   },
+  toEqualVector(received, expected) {
+    return toEqualTuple(received, expected);
+  },
   toEqualColor(received, expected) {
     return toEqualTuple(received, expected);
   },
