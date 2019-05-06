@@ -1,4 +1,5 @@
-import { Matrix } from "./matrix";
+import { Matrix, multiply } from "./matrix";
+import { cross, normalize, sub, negate } from "./tuple";
 
 export const translation = (x, y, z) => {
   return Matrix.initFromArray([
@@ -52,4 +53,18 @@ export const shearing = (xy, xz, yx, yz, zx, zy) => {
     [zx, zy, 1, 0],
     [0, 0, 0, 1]
   ]);
+};
+
+export const viewTransform = (from, to, up) => {
+  const forward = normalize(sub(to, from));
+  const upn = normalize(up);
+  const left = cross(forward, up);
+  const trueUp = cross(left, forward);
+  const orientation = Matrix.initFromArray([
+    [left.x, left.y, left.z, 0],
+    [trueUp.x, trueUp.y, trueUp.z, 0],
+    [-forward.x, -forward.y, -forward.z, 0],
+    [0, 0, 0, 1]
+  ]);
+  return multiply(orientation, translation(-from.x, -from.y, -from.z));
 };

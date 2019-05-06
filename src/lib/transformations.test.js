@@ -4,11 +4,13 @@ import {
   rotationX,
   rotationY,
   rotationZ,
-  shearing
+  shearing,
+  viewTransform
 } from "./transformations";
-import { multiply, multiplyTuple, inverse } from "./matrix";
+import { Matrix, multiply, multiplyTuple, inverse } from "./matrix";
 import { point, vector, equals } from "./tuple";
 
+describe("transformations", () => {
 describe("translation", () => {
   it("multiplying by a translation matrix should move a point", () => {
     const transform = translation(5, -3, 2);
@@ -174,3 +176,44 @@ describe("chaining", () => {
     expect(equals(expected, multiplyTuple(T, p)));
   });
 });
+
+  describe("view transformation", () => {
+    it("should yield the identity matrix for the default orientation", () => {
+      const from = point(0, 0, 0);
+      const to = point(0, 0, -1);
+      const up = vector(0, 1, 0);
+      const t = viewTransform(from, to, up);
+      expect(t).toEqualMatrix(Matrix.identity);
+    });
+
+    it("should reflect the identity matrix x and z when looking in the positive z direction", () => {
+      const from = point(0, 0, 0);
+      const to = point(0, 0, 1);
+      const up = vector(0, 1, 0);
+      const t = viewTransform(from, to, up);
+      expect(t).toEqualMatrix(scaling(-1, 1, -1));
+    });
+
+    it("should move the world, not the eye", () => {
+      const from = point(0, 0, 8);
+      const to = point(0, 0, 0);
+      const up = vector(0, 1, 0);
+      const t = viewTransform(from, to, up);
+      expect(t).toEqualMatrix(translation(0, 0, -8));
+    });
+
+    it("should work with any from, to points", () => {
+      const from = point(1, 3, 2);
+      const to = point(4, -2, 8);
+      const up = vector(1, 1, 0);
+      const t = viewTransform(from, to, up);
+      const expected = Matrix.initFromArray([
+        [-0.50709 , 0.50709 ,  0.67612 , -2.36643],
+        [ 0.76772 , 0.60609 ,  0.12122 , -2.82843 ],
+        [-0.35857 , 0.59761 , -0.71714 ,  0.00000 ],
+        [ 0.00000 , 0.00000 ,  0.00000 ,  1.00000]
+      ]);
+    });
+  });
+});
+
