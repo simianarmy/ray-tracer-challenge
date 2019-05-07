@@ -218,7 +218,7 @@ export const isInvertible = m => determinant(m) !== 0;
  */
 export const inverse = m => {
   if (!isInvertible(m)) {
-    throw new Error(`inverse: matrix is not invertible`);
+    throw new Error(`inverse: matrix is not invertible: ${m.toString()}`);
   }
 
   let m2 = Matrix(m.rows, m.columns);

@@ -40,7 +40,7 @@ World.Default = () => {
  * @returns {Array[Intersection]}
  */
 export const intersectWorld = (world, ray) => {
-  const intersections = world.objects.reduce((acc, obj) => {
+  const intersections = world.objects.reduce((acc, obj, idx) => {
     return acc.concat(intersect(obj, ray));
   }, []);
 

@@ -1,7 +1,10 @@
-import { Camera, rayForPixel } from "./camera";
+import { Camera, rayForPixel, render } from "./camera";
+import { Color } from "./color";
+import { ColorCanvas } from "./color-canvas";
 import { Matrix, multiply } from "./matrix";
 import { point, vector } from "./tuple";
-import { rotationY, translation } from "./transformations";
+import { rotationY, translation, viewTransform } from "./transformations";
+import { World, colorAt } from "./world";
 
 describe("Camera", () => {
   it("constructor should create properties from args", () => {
@@ -46,6 +49,19 @@ describe("Camera", () => {
       const r = rayForPixel(c, 100, 50);
       expect(r.origin).toEqualPoint(point(0, 2, -5));
       expect(r.direction).toEqualVector(vector(Math.sqrt(2) / 2, 0, -Math.sqrt(2) / 2));
+    });
+  });
+
+  describe("render", () => {
+    it("should render default world", () => {
+      const w = World.Default();
+      const c = Camera(11, 11, Math.PI / 2);
+      const from = point(0, 0, -5);
+      const to = point(0, 0, 0);
+      const up = vector(0, 1, 0);
+      c.transform = viewTransform(from, to, up);
+      const image = render(c, w);
+      expect(image.getPixel(5, 5)).toEqualColor(Color(0.38066, 0.47583, 0.2855));
     });
   });
 });

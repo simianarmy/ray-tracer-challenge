@@ -1,6 +1,8 @@
 import { Matrix, inverse, multiplyTuple } from "./matrix";
 import { Ray } from "./ray";
 import { point, normalize, sub } from "./tuple";
+import { ColorCanvas } from "./color-canvas";
+import { colorAt } from "./world";
 
 export const Camera = (hsize, vsize, fov, transform = Matrix.identity) => {
   const halfView = Math.tan(fov / 2);
@@ -44,4 +46,25 @@ export const rayForPixel = (camera, px, py) => {
   const direction = normalize(sub(pixel, origin));
 
   return Ray(origin, direction);
+};
+
+/**
+ * @param {Camera} camera
+ * @param {World} world
+ * @returns {ColorCanvas}
+ */
+export const render = (camera, world) => {
+  const image = new ColorCanvas(camera.hsize, camera.vsize);
+
+  console.log("rendering world", camera, world);
+
+  for (let y = 0; y < camera.vsize; y++) {
+    for (let x = 0; x < camera.hsize; x++) {
+      const ray = rayForPixel(camera, x, y);
+      const color = colorAt(world, ray);
+      image.writePixel(x, y, color);
+    }
+  }
+
+  return image;
 };
