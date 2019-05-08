@@ -1,10 +1,10 @@
-import { World, colorAt, intersectWorld, shadeHit } from "./world";
+import { World, colorAt, intersectWorld, shadeHit, isShadowed } from "./world";
 import { point, vector } from "./tuple";
 import { PointLight } from "./light";
 import { Color } from "./color";
 import { Sphere } from "./sphere";
 import { Ray } from "./ray";
-import { scaling } from "./transformations";
+import { scaling, translation } from "./transformations";
 import { Intersection, prepareComputations } from "./intersection";
 
 describe("World", () => {
@@ -26,18 +26,42 @@ describe("World", () => {
       expectedSphere2.setTransform(scaling(0.5, 0.5, 0.5));
       expect(w.lightSource.position).toEqualTuple(expectedLight.position);
       expect(w.lightSource.intensity).toEqualColor(expectedLight.intensity);
-      expect(w.objects[0].getTransform()).toEqualMatrix(expectedSphere1.getTransform());
-      expect(w.objects[0].material.color).toEqualColor(expectedSphere1.material.color);
-      expect(w.objects[0].material.ambient).toBe(expectedSphere1.material.ambient);
-      expect(w.objects[0].material.diffuse).toBe(expectedSphere1.material.diffuse);
-      expect(w.objects[0].material.specular).toBe(expectedSphere1.material.specular);
-      expect(w.objects[0].material.shininess).toBe(expectedSphere1.material.shininess);
-      expect(w.objects[1].getTransform()).toEqualMatrix(expectedSphere2.getTransform());
-      expect(w.objects[1].material.color).toEqualColor(expectedSphere2.material.color);
-      expect(w.objects[1].material.ambient).toBe(expectedSphere2.material.ambient);
-      expect(w.objects[1].material.diffuse).toBe(expectedSphere2.material.diffuse);
-      expect(w.objects[1].material.specular).toBe(expectedSphere2.material.specular);
-      expect(w.objects[1].material.shininess).toBe(expectedSphere2.material.shininess);
+      expect(w.objects[0].getTransform()).toEqualMatrix(
+        expectedSphere1.getTransform()
+      );
+      expect(w.objects[0].material.color).toEqualColor(
+        expectedSphere1.material.color
+      );
+      expect(w.objects[0].material.ambient).toBe(
+        expectedSphere1.material.ambient
+      );
+      expect(w.objects[0].material.diffuse).toBe(
+        expectedSphere1.material.diffuse
+      );
+      expect(w.objects[0].material.specular).toBe(
+        expectedSphere1.material.specular
+      );
+      expect(w.objects[0].material.shininess).toBe(
+        expectedSphere1.material.shininess
+      );
+      expect(w.objects[1].getTransform()).toEqualMatrix(
+        expectedSphere2.getTransform()
+      );
+      expect(w.objects[1].material.color).toEqualColor(
+        expectedSphere2.material.color
+      );
+      expect(w.objects[1].material.ambient).toBe(
+        expectedSphere2.material.ambient
+      );
+      expect(w.objects[1].material.diffuse).toBe(
+        expectedSphere2.material.diffuse
+      );
+      expect(w.objects[1].material.specular).toBe(
+        expectedSphere2.material.specular
+      );
+      expect(w.objects[1].material.shininess).toBe(
+        expectedSphere2.material.shininess
+      );
     });
   });
 
@@ -54,8 +78,8 @@ describe("World", () => {
     });
   });
 
-  describe("shading an intersection", () => {
-    it("shadeHit should return the correct outside color", () => {
+  describe("shadeHit", () => {
+    it("should return the correct outside color", () => {
       const w = World.Default();
       const r = Ray(point(0, 0, -5), vector(0, 0, 1));
       const shape = w.objects[0];
@@ -65,7 +89,7 @@ describe("World", () => {
       expect(expected).toEqualColor(Color(0.38066, 0.47583, 0.2855));
     });
 
-    it("shadeHit should return the correct inside color", () => {
+    it("should return the correct inside color", () => {
       const w = World.Default();
       w.lightSource = PointLight(point(0, 0.25, 0), Color(1, 1, 1));
       const r = Ray(point(0, 0, 0), vector(0, 0, 1));
@@ -74,6 +98,21 @@ describe("World", () => {
       const comps = prepareComputations(is, r);
       const expected = shadeHit(w, comps);
       expect(expected).toEqualColor(Color(0.90498, 0.90498, 0.90498));
+    });
+
+    it("given an intersection in shadow should return the ambient color", () => {
+      const w = World();
+      w.lightSource = PointLight(point(0, 0, -10), Color(1, 1, 1));
+      const s1 = Sphere();
+      const s2 = Sphere();
+      s2.setTransform(translation(0, 0, 10));
+      w.objects.push(s1);
+      w.objects.push(s2);
+      const r = Ray(point(0, 0, 5), vector(0, 0, 1));
+      const is = Intersection(4, s2);
+      const comps = prepareComputations(is, r);
+      const expected = shadeHit(w, comps);
+      expect(expected).toEqualColor(Color(0.1, 0.1, 0.1));
     });
   });
 
@@ -103,5 +142,31 @@ describe("World", () => {
       const expected = colorAt(w, r);
       expect(expected).toEqualColor(inner.material.color);
     });
-  })
+  });
+
+  describe("shadows", () => {
+    it("should detect no shadow when nothing is collinear with point and light", () => {
+      const w = World.Default();
+      const p = point(0, 10, 0);
+      expect(isShadowed(w, p)).not.toBeTruthy();
+    });
+
+    it("should detect shadow when object is between point and light", () => {
+      const w = World.Default();
+      const p = point(10, -10, 10);
+      expect(isShadowed(w, p)).toBeTruthy();
+    });
+
+    it("should detect no shadow when object is behind the light", () => {
+      const w = World.Default();
+      const p = point(-20, 20, -20);
+      expect(isShadowed(w, p)).not.toBeTruthy();
+    });
+
+    it("should detect no shadow when object is behind the point", () => {
+      const w = World.Default();
+      const p = point(-2, 2, -2);
+      expect(isShadowed(w, p)).not.toBeTruthy();
+    });
+  });
 });

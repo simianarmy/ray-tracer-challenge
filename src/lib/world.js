@@ -1,7 +1,8 @@
-import { point } from "./tuple";
+import { point, sub, magnitude, normalize } from "./tuple";
 import { PointLight } from "./light";
 import { Color } from "./color";
 import { Sphere } from "./sphere";
+import { Ray } from "./ray";
 import { intersect } from "./ray";
 import { scaling } from "./transformations";
 import { lighting } from "./material";
@@ -45,7 +46,7 @@ export const intersectWorld = (world, ray) => {
   }, []);
 
   return intersections.sort((ia, ib) => {
-    return ia.t < ib.t ? -1 : (ia.t > ib.t) ? 1 : 0;
+    return ia.t < ib.t ? -1 : ia.t > ib.t ? 1 : 0;
   });
 };
 
@@ -55,7 +56,13 @@ export const intersectWorld = (world, ray) => {
  * @returns {Color}
  */
 export const shadeHit = (world, comps) => {
-  return lighting(comps.object.material, world.lightSource, comps.point, comps.eyev, comps.normalv);
+  return lighting(
+    comps.object.material,
+    world.lightSource,
+    comps.point,
+    comps.eyev,
+    comps.normalv
+  );
 };
 
 /**
@@ -71,4 +78,20 @@ export const colorAt = (world, ray) => {
 
   const comps = prepareComputations(is, ray);
   return shadeHit(world, comps);
+};
+
+/**
+ * @returns {Boolean}
+ */
+export const isShadowed = (world, p) => {
+  const v = sub(world.lightSource.position, p);
+  const distance = magnitude(v);
+  const direction = normalize(v);
+
+  const r = Ray(p, direction);
+  const xs = intersectWorld(world, r);
+
+  const h = hit(xs);
+
+  return h && h.t < distance;
 };

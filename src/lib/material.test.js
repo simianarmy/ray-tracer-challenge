@@ -65,6 +65,15 @@ describe("Material", () => {
       const color = 0.1;
       expect(result).toEqualColor(Color(color, color, color));
     });
+
+    it("with the surface in shadow", () => {
+      const eyev = vector(0, 0, -1);
+      const normalv = vector(0, 0, -1);
+      const light = PointLight(point(0, 0, -10), Color(1, 1, 1));
+      const inShadow = true;
+      const result = lighting(m, light, position, eyev, normalv, inShadow);
+      const color = 0.1;
+      expect(result).toEqualColor(Color(color, color, color));
+    });
   });
 });
-

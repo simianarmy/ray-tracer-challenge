@@ -17,7 +17,7 @@ export const Camera = (hsize, vsize, fov, transform = Matrix.identity) => {
     halfHeight = halfView;
   }
 
-  const pixelSize = (halfWidth * 2) / hsize;
+  const pixelSize = halfWidth * 2 / hsize;
 
   return {
     hsize,
@@ -56,7 +56,7 @@ export const rayForPixel = (camera, px, py) => {
 export const render = (camera, world) => {
   const image = new ColorCanvas(camera.hsize, camera.vsize);
 
-  console.log("rendering world", camera, world);
+  //console.log("rendering world", camera, world);
 
   for (let y = 0; y < camera.vsize; y++) {
     for (let x = 0; x < camera.hsize; x++) {
