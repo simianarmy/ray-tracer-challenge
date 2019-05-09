@@ -56,12 +56,15 @@ export const intersectWorld = (world, ray) => {
  * @returns {Color}
  */
 export const shadeHit = (world, comps) => {
+  const shadowed = isShadowed(world, comps.overPoint);
+
   return lighting(
     comps.object.material,
     world.lightSource,
-    comps.point,
+    comps.overPoint,
     comps.eyev,
-    comps.normalv
+    comps.normalv,
+    shadowed
   );
 };
 

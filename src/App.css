@@ -19,3 +19,7 @@
 .animation {
   font-size: 14px;
 }
+
+.dl-link {
+  cursor: pointer;
+}

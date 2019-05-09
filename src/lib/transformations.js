@@ -58,7 +58,7 @@ export const shearing = (xy, xz, yx, yz, zx, zy) => {
 export const viewTransform = (from, to, up) => {
   const forward = normalize(sub(to, from));
   const upn = normalize(up);
-  const left = cross(forward, up);
+  const left = cross(forward, upn);
   const trueUp = cross(left, forward);
   const orientation = Matrix.initFromArray([
     [left.x, left.y, left.z, 0],

@@ -2,6 +2,7 @@ import { Intersection, intersections, hit, prepareComputations } from "./interse
 import { Sphere } from "./sphere";
 import { Ray, intersect } from "./ray";
 import { point, vector } from "./tuple";
+import { translation } from "./transformations";
 
 describe("Intersection", () => {
   it("should encapsulate t and an object", () => {
@@ -95,6 +96,16 @@ describe("hit", () => {
       expect(comps.eyev).toEqualVector(vector(0, 0, -1));
       expect(comps.inside).toBeTruthy();
       expect(comps.normalv).toEqualVector(vector(0, 0, -1));
+    });
+
+    it("hit should offset the point", () => {
+      const r = Ray(point(0, 0, -5), vector(0, 0, 1));
+      const shape = Sphere();
+      shape.setTransform(translation(0, 0, 1));
+      const is = Intersection(5, shape);
+      const comps = prepareComputations(is, r);
+      expect(comps.overPoint.z).toBeLessThan(-Number.EPSILON / 2);
+      expect(comps.point.z).toBeGreaterThan(comps.overPoint.z);
     });
   });
 });

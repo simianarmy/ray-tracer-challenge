@@ -1,6 +1,7 @@
 import { normalAt } from "./sphere";
 import { position } from "./ray";
-import { dot, negate } from "./tuple";
+import { add, dot, negate, multiply } from "./tuple";
+import { EPSILON } from "./math";
 
 export const Intersection = (t, object) => {
   return {
@@ -47,7 +48,7 @@ export const prepareComputations = (is, ray) => {
     object: is.object,
     point,
     eyev: negate(ray.direction),
-    normalv: normalAt(is.object, point)
+    normalv: normalAt(is.object, point),
   };
 
   if (dot(comps.normalv, comps.eyev) < 0) {
@@ -56,6 +57,10 @@ export const prepareComputations = (is, ray) => {
   } else {
     comps.inside = false;
   }
+
+  // prevent acne by placing intersection point slightly 'above' point in
+  // direction of normalv
+  comps.overPoint = add(comps.point, multiply(comps.normalv, EPSILON));
 
   return comps;
 }
