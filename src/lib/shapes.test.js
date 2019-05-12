@@ -37,27 +37,27 @@ describe("Shape", () => {
 
   describe("intersect", () => {
     describe("scaled shape with a ray", () => {
-    it("should call concrete implementation with ray converted to object space", () => {
-      const ts = testShape();
-      ts.setTransform(scaling(2, 2, 2));
-      ts.localIntersect = jest.fn();
-      const ray = Ray(point(0, 0, -5), vector(0, 0, 1));
-      ts.intersect(ray);
-      const expected = Ray(point(0, 0, -2.5), vector(0, 0, 0.5));
-      expect(ts.localIntersect.mock.calls[0][0].toString()).toEqual(expected.toString());
-    });
+      it("should call concrete implementation with ray converted to object space", () => {
+        const ts = testShape();
+        ts.setTransform(scaling(2, 2, 2));
+        ts.localIntersect = jest.fn();
+        const ray = Ray(point(0, 0, -5), vector(0, 0, 1));
+        ts.intersect(ray);
+        const expected = Ray(point(0, 0, -2.5), vector(0, 0, 0.5));
+        expect(ts.localIntersect.mock.calls[0][0].toString()).toEqual(expected.toString());
+      });
     });
 
     describe("translated shape with a ray", () => {
-    it("should call concrete implementation with ray converted to object space", () => {
-      const ts = testShape();
-      ts.setTransform(translation(5, 0, 0));
-      ts.localIntersect = jest.fn();
-      const ray = Ray(point(0, 0, -5), vector(0, 0, 1));
-      ts.intersect(ray);
-      const expected = Ray(point(-5, 0, -5), vector(0, 0, 1));
-      expect(ts.localIntersect.mock.calls[0][0].toString()).toEqual(expected.toString());
-    });
+      it("should call concrete implementation with ray converted to object space", () => {
+        const ts = testShape();
+        ts.setTransform(translation(5, 0, 0));
+        ts.localIntersect = jest.fn();
+        const ray = Ray(point(0, 0, -5), vector(0, 0, 1));
+        ts.intersect(ray);
+        const expected = Ray(point(-5, 0, -5), vector(0, 0, 1));
+        expect(ts.localIntersect.mock.calls[0][0].toString()).toEqual(expected.toString());
+      });
     });
   });
 

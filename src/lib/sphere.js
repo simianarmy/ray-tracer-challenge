@@ -19,10 +19,9 @@ class Sphere extends Shape {
    * @returns {Array[Intersection]}
    */
   localIntersect(r) {
-    const ray2 = transform(r, inverse(this.getTransform()));
-    const sphereToRay = sub(ray2.origin, point(0, 0, 0));
-    const a = dot(ray2.direction, ray2.direction);
-    const b = 2 * dot(ray2.direction, sphereToRay);
+    const sphereToRay = sub(r.origin, point(0, 0, 0));
+    const a = dot(r.direction, r.direction);
+    const b = 2 * dot(r.direction, sphereToRay);
     const c = dot(sphereToRay, sphereToRay) - 1;
     const discriminant = b * b - 4 * a * c;
 
