@@ -3,7 +3,6 @@ import { PointLight } from "./light";
 import { Color } from "./color";
 import { Sphere } from "./sphere";
 import { Ray } from "./ray";
-import { intersect } from "./ray";
 import { scaling } from "./transformations";
 import { lighting } from "./material";
 import { hit, prepareComputations } from "./intersection";
@@ -23,11 +22,11 @@ World.Default = () => {
 
   w.lightSource = PointLight(point(-10, 10, -10), Color(1, 1, 1));
 
-  const s1 = Sphere();
+  const s1 = new Sphere();
   s1.material.color = Color(0.8, 1, 0.6);
   s1.material.diffuse = 0.7;
   s1.material.specular = 0.2;
-  const s2 = Sphere();
+  const s2 = new Sphere();
   s2.setTransform(scaling(0.5, 0.5, 0.5));
 
   w.objects.push(s1);
@@ -42,7 +41,7 @@ World.Default = () => {
  */
 export const intersectWorld = (world, ray) => {
   const intersections = world.objects.reduce((acc, obj, idx) => {
-    return acc.concat(intersect(obj, ray));
+    return acc.concat(obj.intersect(ray));
   }, []);
 
   return intersections.sort((ia, ib) => {

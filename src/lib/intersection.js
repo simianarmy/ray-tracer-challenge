@@ -1,8 +1,12 @@
-import { normalAt } from "./sphere";
 import { position } from "./ray";
 import { add, dot, negate, multiply } from "./tuple";
 import { EPSILON } from "./math";
 
+/**
+ * @constructor
+ * @param {Number} t scalar
+ * @param {Shape} object
+ */
 export const Intersection = (t, object) => {
   return {
     t,
@@ -48,7 +52,7 @@ export const prepareComputations = (is, ray) => {
     object: is.object,
     point,
     eyev: negate(ray.direction),
-    normalv: normalAt(is.object, point),
+    normalv: is.object.normalAt(point),
   };
 
   if (dot(comps.normalv, comps.eyev) < 0) {

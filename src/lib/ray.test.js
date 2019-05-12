@@ -23,8 +23,8 @@ describe("Ray", () => {
   describe("intersection with sphere", () => {
     it("should intersect at two points", () => {
       const r = Ray(point(0, 0, -5), vector(0, 0, 1));
-      const s = Sphere();
-      const xs = intersect(s, r);
+      const s = new Sphere();
+      const xs = s.intersect(r);
       expect(xs.length).toBe(2);
       expect(xs[0].t).toBe(4.0);
       expect(xs[1].t).toBe(6.0);
@@ -32,8 +32,8 @@ describe("Ray", () => {
 
     it("at the tangent should intersect at two equal points", () => {
       const r = Ray(point(0, 1, -5), vector(0, 0, 1));
-      const s = Sphere();
-      const xs = intersect(s, r);
+      const s = new Sphere();
+      const xs = s.intersect(r);
       expect(xs.length).toBe(2);
       expect(xs[0].t).toBe(5.0);
       expect(xs[1].t).toBe(5.0);
@@ -41,8 +41,8 @@ describe("Ray", () => {
 
     it("ray starting inside of sphere should intersect at two points", () => {
       const r = Ray(point(0, 0, 0), vector(0, 0, 1));
-      const s = Sphere();
-      const xs = intersect(s, r);
+      const s = new Sphere();
+      const xs = s.intersect(r);
       expect(xs.length).toBe(2);
       expect(xs[0].t).toBe(-1.0);
       expect(xs[1].t).toBe(1.0);
@@ -50,8 +50,8 @@ describe("Ray", () => {
 
     it("sphere behind ray should intersect at two points", () => {
       const r = Ray(point(0, 0, 5), vector(0, 0, 1));
-      const s = Sphere();
-      const xs = intersect(s, r);
+      const s = new Sphere();
+      const xs = s.intersect(r);
       expect(xs.length).toBe(2);
       expect(xs[0].t).toBe(-6.0);
       expect(xs[1].t).toBe(-4.0);
@@ -60,8 +60,8 @@ describe("Ray", () => {
 
   it("not intersecting a sphere should return no intersecting points", () => {
       const r = Ray(point(0, 2, -5), vector(0, 0, 1));
-      const s = Sphere();
-      const xs = intersect(s, r);
+      const s = new Sphere();
+      const xs = s.intersect(r);
       expect(xs.length).toBe(0);
   });
 

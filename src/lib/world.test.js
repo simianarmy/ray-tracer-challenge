@@ -18,11 +18,11 @@ describe("World", () => {
     it("contains default light source and concentric spheres", () => {
       const w = World.Default();
       const expectedLight = PointLight(point(-10, 10, -10), Color(1, 1, 1));
-      const expectedSphere1 = Sphere();
+      const expectedSphere1 = new Sphere();
       expectedSphere1.material.color = Color(0.8, 1, 0.6);
       expectedSphere1.material.diffuse = 0.7;
       expectedSphere1.material.specular = 0.2;
-      const expectedSphere2 = Sphere();
+      const expectedSphere2 = new Sphere();
       expectedSphere2.setTransform(scaling(0.5, 0.5, 0.5));
       expect(w.lightSource.position).toEqualTuple(expectedLight.position);
       expect(w.lightSource.intensity).toEqualColor(expectedLight.intensity);
@@ -103,8 +103,8 @@ describe("World", () => {
     it("given an intersection in shadow should return the ambient color", () => {
       const w = World();
       w.lightSource = PointLight(point(0, 0, -10), Color(1, 1, 1));
-      const s1 = Sphere();
-      const s2 = Sphere();
+      const s1 = new Sphere();
+      const s2 = new Sphere();
       s2.setTransform(translation(0, 0, 10));
       w.objects.push(s1);
       w.objects.push(s2);
