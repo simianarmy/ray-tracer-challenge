@@ -3,15 +3,13 @@ import React from "react";
 import { saveAs } from 'file-saver';
 
 import { ColorCanvas } from "./lib/color-canvas";
-import { point, vector, sub, negate, normalize } from "./lib/tuple";
-import { Ray, intersect, position } from "./lib/ray";
-import { Sphere, normalAt } from "./lib/sphere";
+import { point, sub, negate, normalize } from "./lib/tuple";
+import { Ray, position } from "./lib/ray";
+import { Sphere } from "./lib/sphere";
 import { Color } from "./lib/color";
 import { lighting } from "./lib/material";
 import { PointLight } from "./lib/light";
 import { hit } from "./lib/intersection";
-import { scaling, translation, rotationZ } from "./lib/transformations";
-import { Matrix, multiply } from "./lib/matrix";
 import "./App.css";
 
 const ColorBlack = Color(0, 0, 0);
@@ -41,7 +39,7 @@ class Animation extends React.Component {
         // cast ray to pixel on wall
         const wallPoint = point(worldX, worldY, wallZ);
         const ray = Ray(rayOrigin, normalize(sub(wallPoint, rayOrigin)));
-        const xs = intersect(sphere, ray);
+        const xs = sphere.intersect(ray);
 
         // if intersections, color the pixel
         if (xs.length > 0) {
@@ -49,7 +47,7 @@ class Animation extends React.Component {
           const closest = hit(xs);
           //console.log("ray intersects sphere at ", closest);
           const hitPos = position(ray, closest.t);
-          const normal = normalAt(closest.object, hitPos);
+          const normal = closest.object.normalAt(hitPos);
 
           // calculate eye vector?
           const eye = negate(ray.direction);

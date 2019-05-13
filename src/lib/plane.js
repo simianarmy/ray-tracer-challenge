@@ -3,7 +3,7 @@ import { vector } from "./tuple";
 import { EPSILON } from "./math";
 import { Intersection } from "./intersection";
 
-class Plane {
+class Plane extends Shape {
   localNormalAt() {
     return vector(0, 1, 0);
   }

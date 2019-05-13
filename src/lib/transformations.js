@@ -1,5 +1,5 @@
 import { Matrix, multiply } from "./matrix";
-import { cross, normalize, sub, negate } from "./tuple";
+import { cross, normalize, sub } from "./tuple";
 
 export const translation = (x, y, z) => {
   return Matrix.initFromArray([

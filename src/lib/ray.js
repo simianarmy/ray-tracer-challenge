@@ -1,6 +1,5 @@
-import { add, dot, multiply, point, sub } from "./tuple";
-import { inverse, multiplyTuple } from "./matrix";
-import { Intersection } from "./intersection";
+import { add, multiply } from "./tuple";
+import { multiplyTuple } from "./matrix";
 
 /**
  * @param {Point} origin

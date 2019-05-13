@@ -1,8 +1,8 @@
 import React from "react";
 import { saveAs } from 'file-saver';
 
-import {  point, vector, World, Sphere, Color, PointLight, scaling, translation, rotationX, rotationY, rotationZ, viewTransform, Camera, render  } from "./lib/index";
-import { Matrix, multiply } from "./lib/matrix";
+import {  point, vector, World, Sphere, Color, PointLight, scaling, translation, rotationX, rotationY, viewTransform, Camera, render  } from "./lib/index";
+import { multiply } from "./lib/matrix";
 import "./App.css";
 
 // Control resolution = render time
@@ -115,7 +115,7 @@ class Animation extends React.Component {
   render() {
     return this.state.ready ? (
       <div>
-        <h1>File generated</h1> (<a className="dl-link" onClick={this.downloadImage}>Download {this.state.imgFileName}</a>)
+        <h1>File generated</h1> (<button className="dl-link" onClick={this.downloadImage}>Download {this.state.imgFileName}</button>)
       </div>
     ) : (
       <h1>Generating...</h1>

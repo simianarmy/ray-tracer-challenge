@@ -1,8 +1,5 @@
-import { Matrix, inverse, multiplyTuple, transpose } from "./matrix";
-import { dot, normalize, point, sub } from "./tuple";
-import { Material } from "./material";
+import { dot, point, sub } from "./tuple";
 import { Shape } from "./shape";
-import { transform } from "./ray";
 import { Intersection } from "./intersection";
 
 const uuidv1 = require("uuid/v1");

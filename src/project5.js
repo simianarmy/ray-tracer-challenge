@@ -1,8 +1,8 @@
 import React from "react";
 
 import { ColorCanvas } from "./lib/color-canvas";
-import { point, vector, sub, normalize } from "./lib/tuple";
-import { Ray, intersect } from "./lib/ray";
+import { point, sub, normalize } from "./lib/tuple";
+import { Ray } from "./lib/ray";
 import { Sphere } from "./lib/sphere";
 import { Color } from "./lib/color";
 import "./App.css";
@@ -34,7 +34,7 @@ class Animation extends React.Component {
         // cast ray from lightsource to pixel on wall
         const wallPoint = point(worldX, worldY, wallZ);
         const ray = Ray(rayOrigin, normalize(sub(wallPoint, rayOrigin)));
-        const xs = intersect(sphere, ray);
+        const xs = sphere.intersect(ray);
         // if intersections, color the pixel
         if (xs.length > 0) {
           canvas.writePixel(x, y, sphereColor);

@@ -7,6 +7,7 @@ export * from "./light";
 export * from "./material";
 export * from "./math";
 export * from "./matrix";
+export * from "./plane";
 export * from "./ppm";
 export * from "./projectile";
 export * from "./ray";
