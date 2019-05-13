@@ -23,7 +23,7 @@ class Shape {
   }
 
   /**
-   * @returns {Ray}
+   * @returns {Array[Intersection]}
    */
   intersect(ray) {
     // convert ray to object space before calculating with shape's concrete
