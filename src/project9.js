@@ -1,6 +1,6 @@
 import React from "react";
 
-import {  point, vector, World, Plane, Sphere, Color, PointLight, scaling, translation, rotationX, viewTransform, Camera, Stripe, render  } from "./lib/index";
+import {  point, vector, World, Plane, Sphere, Color, PointLight, scaling, translation, rotationX, rotationZ, viewTransform, Camera, Stripe, render  } from "./lib/index";
 import { multiply } from "./lib/matrix";
 import { FileDownloadButton } from "./components/file-download-button";
 import "./App.css";
@@ -9,7 +9,7 @@ import "./App.css";
 const ProjectTitle = "Project 9";
 const HSIZE = 100;
 const VSIZE= 50;
-const RESOLUTION = 1;
+const RESOLUTION = 4;
 
 class Animation extends React.Component {
   castRays() {
@@ -33,6 +33,8 @@ class Animation extends React.Component {
     const floor = new Plane();
     floor.material.color = Color(1, 0.9, 0.9);
     floor.material.specular = 0;
+    floor.material.pattern = Stripe(Color(1, 0.5, 0.2), Color(0, 0, 0));
+    floor.material.pattern.setTransform(scaling(0.1, 0.1, 0.2));
 
     const backWall = new Plane();
     backWall.setTransform(
@@ -65,7 +67,8 @@ class Animation extends React.Component {
     middle.material.color = Color(.1, 1, .5);
     middle.material.diffuse = 0.7;
     middle.material.specular = 0.3;
-    middle.material.pattern = Stripe(Color(1, 0.5, 0.2), Color(0, 0, 0));
+    middle.material.pattern = Stripe(Color(1, 0, 0.2), Color(0, 0, 1));
+    middle.material.pattern.setTransform(multiply(rotationZ(0.5), scaling(0.1, 0.1, 0.2)));
 
     const right = new Sphere();
     right.setTransform(multiply(translation(1.5, .5, -0.5),

@@ -59,6 +59,7 @@ export const shadeHit = (world, comps) => {
 
   return lighting(
     comps.object.material,
+    comps.object,
     world.lightSource,
     comps.overPoint,
     comps.eyev,

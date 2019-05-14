@@ -5,7 +5,7 @@ import {
   multiplyByScalar
 } from "./color";
 import { dot, multiply, negate, normalize, reflect, sub } from "./tuple";
-import { stripeAt } from "./pattern";
+import { stripeAtObject } from "./pattern";
 
 const DEFAULT_COLOR = Color.White;
 const DEFAULT_AMBIENT = 0.1;
@@ -28,6 +28,7 @@ export const Material = () => {
  * Phong Reflection Model
  *
  * @param {Material} material
+ * @param {Shape} object
  * @param {LightPoint} light
  * @param {Point} pnt
  * @param {Vector} eye
@@ -37,6 +38,7 @@ export const Material = () => {
  */
 export const lighting = (
   material,
+  object,
   light,
   pnt,
   eye,
@@ -46,7 +48,7 @@ export const lighting = (
   let materialColor, ambient, diffuse, specular;
 
   if (material.pattern) {
-    materialColor = stripeAt(material.pattern, pnt);
+    materialColor = stripeAtObject(material.pattern, object, pnt);
   } else {
     materialColor = material.color;
   }

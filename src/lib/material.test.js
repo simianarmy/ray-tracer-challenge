@@ -3,6 +3,7 @@ import { Color } from "./color";
 import { point, vector } from "./tuple";
 import { PointLight } from "./light";
 import { Stripe } from "./pattern";
+import { Sphere } from "./sphere";
 
 describe("Material", () => {
   it("should have default values", () => {
@@ -15,10 +16,11 @@ describe("Material", () => {
   });
 
   describe("lighting", () => {
-    let m, position;
+    let m, object, position;
 
     beforeEach(() => {
       m = Material();
+      object = new Sphere();
       position = point(0, 0, 0);
     });
 
@@ -26,7 +28,7 @@ describe("Material", () => {
       const eyev = vector(0, 0, -1);
       const normalv = vector(0, 0, -1);
       const light = PointLight(point(0, 0, -10), Color(1, 1, 1));
-      const result = lighting(m, light, position, eyev, normalv);
+      const result = lighting(m, object, light, position, eyev, normalv);
       const color = 1.9;
       expect(result).toEqualColor(Color(color, color, color));
     });
@@ -35,7 +37,7 @@ describe("Material", () => {
       const eyev = vector(0, Math.sqrt(2) / 2, -Math.sqrt(2) / 2);
       const normalv = vector(0, 0, -1);
       const light = PointLight(point(0, 0, -10), Color(1, 1, 1));
-      const result = lighting(m, light, position, eyev, normalv);
+      const result = lighting(m, object, light, position, eyev, normalv);
       const color = 1.0;
       expect(result).toEqualColor(Color(color, color, color));
     });
@@ -44,7 +46,7 @@ describe("Material", () => {
       const eyev = vector(0, 0, -1);
       const normalv = vector(0, 0, -1);
       const light = PointLight(point(0, 10, -10), Color(1, 1, 1));
-      const result = lighting(m, light, position, eyev, normalv);
+      const result = lighting(m, object, light, position, eyev, normalv);
       const color = 0.7364;
       expect(result).toEqualColor(Color(color, color, color));
     });
@@ -53,7 +55,7 @@ describe("Material", () => {
       const eyev = vector(0, -Math.sqrt(2) / 2, -Math.sqrt(2) / 2);
       const normalv = vector(0, 0, -1);
       const light = PointLight(point(0, 10, -10), Color(1, 1, 1));
-      const result = lighting(m, light, position, eyev, normalv);
+      const result = lighting(m, object, light, position, eyev, normalv);
       const color = 1.6364;
       expect(result).toEqualColor(Color(color, color, color));
     });
@@ -62,7 +64,7 @@ describe("Material", () => {
       const eyev = vector(0, 0, -1);
       const normalv = vector(0, 0, -1);
       const light = PointLight(point(0, 0, 10), Color(1, 1, 1));
-      const result = lighting(m, light, position, eyev, normalv);
+      const result = lighting(m, object, light, position, eyev, normalv);
       const color = 0.1;
       expect(result).toEqualColor(Color(color, color, color));
     });
@@ -72,7 +74,7 @@ describe("Material", () => {
       const normalv = vector(0, 0, -1);
       const light = PointLight(point(0, 0, -10), Color(1, 1, 1));
       const inShadow = true;
-      const result = lighting(m, light, position, eyev, normalv, inShadow);
+      const result = lighting(m, object, light, position, eyev, normalv, inShadow);
       const color = 0.1;
       expect(result).toEqualColor(Color(color, color, color));
     });
@@ -86,8 +88,8 @@ describe("Material", () => {
         const eyev = vector(0, 0, -1);
         const normalv = vector(0, 0, -1);
         const light = PointLight(point(0, 0, -10), Color(1, 1, 1));
-        const c1 = lighting(m, light, point(0.9, 0, 0), eyev, normalv, false);
-        const c2 = lighting(m, light, point(1.1, 0, 0), eyev, normalv, false);
+        const c1 = lighting(m, object, light, point(0.9, 0, 0), eyev, normalv, false);
+        const c2 = lighting(m, object, light, point(1.1, 0, 0), eyev, normalv, false);
         expect(c1).toEqualColor(Color.White);
         expect(c2).toEqualColor(Color.Black);
       });
