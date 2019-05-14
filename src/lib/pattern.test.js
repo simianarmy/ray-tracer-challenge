@@ -1,4 +1,4 @@
-import { testPattern, Stripe } from "./pattern";
+import { testPattern, Stripe, Gradient, Ring, Checkers } from "./pattern";
 import { Color } from "./color";
 import { point } from "./tuple";
 import { Sphere } from "./sphere";
@@ -22,7 +22,7 @@ describe("Patterns", () => {
     expect(pattern.getTransform()).toEqualMatrix(t);
   });
 
-  describe("atShape", () => {
+  describe("patternAtShape", () => {
     beforeEach(() => {
       pattern = testPattern();
     });
@@ -83,6 +83,64 @@ describe("Patterns", () => {
         expect(pattern.patternAt(point(-1, 0, 0))).toEqual(Color.Black);
         expect(pattern.patternAt(point(-1.1, 0, 0))).toEqual(Color.White);
       });
+    });
+  });
+
+  describe("Gradient", () => {
+    beforeEach(() => {
+      pattern = new Gradient(Color.White, Color.Black);
+    });
+
+    it("should linearly interpolate between colors", () => {
+      expect(pattern.patternAt(point(0, 0, 0))).toEqualColor(Color.White);
+      expect(pattern.patternAt(point(0.25, 0, 0))).toEqualColor(
+        Color(0.75, 0.75, 0.75)
+      );
+      expect(pattern.patternAt(point(0.5, 0, 0))).toEqualColor(
+        Color(0.5, 0.5, 0.5)
+      );
+      expect(pattern.patternAt(point(0.75, 0, 0))).toEqualColor(
+        Color(0.25, 0.25, 0.25)
+      );
+    });
+  });
+
+  describe("Ring", () => {
+    beforeEach(() => {
+      pattern = new Ring(Color.White, Color.Black);
+    });
+
+    it("should extend in both x and z", () => {
+      expect(pattern.patternAt(point(0, 0, 0))).toEqualColor(Color.White);
+      expect(pattern.patternAt(point(1, 0, 0))).toEqualColor(Color.Black);
+      expect(pattern.patternAt(point(0, 0, 1))).toEqualColor(Color.Black);
+      expect(pattern.patternAt(point(0.708, 0, 0.708))).toEqualColor(
+        Color.Black
+      );
+    });
+  });
+
+  describe("Checkers", () => {
+    beforeEach(() => {
+      pattern = new Checkers(Color.White, Color.Black);
+    });
+
+    it("should repeat in x", () => {
+      expect(pattern.patternAt(point(0, 0, 0))).toEqualColor(Color.White);
+      expect(pattern.patternAt(point(0.99, 0, 0))).toEqualColor(Color.White);
+      expect(pattern.patternAt(point(1.01, 0, 0))).toEqualColor(Color.Black);
+    });
+
+    it("should repeat in y", () => {
+      expect(pattern.patternAt(point(0, 0, 0))).toEqualColor(Color.White);
+      expect(pattern.patternAt(point(0, 0.99, 0))).toEqualColor(Color.White);
+      expect(pattern.patternAt(point(0, 1.01, 0))).toEqualColor(Color.Black);
+    });
+
+    it("should repeat in z", () => {
+      expect(pattern.patternAt(point(0, 0, 0))).toEqualColor(Color.White);
+      expect(pattern.patternAt(point(0, 0, 0.99))).toEqualColor(Color.White);
+      expect(pattern.patternAt(point(0, 0, 1.01))).toEqualColor(Color.Black);
     });
   });
 });
