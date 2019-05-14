@@ -1,6 +1,6 @@
 import React from "react";
 
-import {  point, vector, World, Plane, Sphere, Color, PointLight, scaling, translation, rotationX, viewTransform, Camera, render  } from "./lib/index";
+import {  point, vector, World, Plane, Sphere, Color, PointLight, scaling, translation, rotationX, viewTransform, Camera, Stripe, render  } from "./lib/index";
 import { multiply } from "./lib/matrix";
 import { FileDownloadButton } from "./components/file-download-button";
 import "./App.css";
@@ -61,10 +61,11 @@ class Animation extends React.Component {
     */
 
     const middle = new Sphere();
-    middle.setTransform(translation(-0.5, 0, 0.5));
+    middle.setTransform(translation(-0.5, 1, 0.5));
     middle.material.color = Color(.1, 1, .5);
     middle.material.diffuse = 0.7;
     middle.material.specular = 0.3;
+    middle.material.pattern = Stripe(Color(1, 0.5, 0.2), Color(0, 0, 0));
 
     const right = new Sphere();
     right.setTransform(multiply(translation(1.5, .5, -0.5),

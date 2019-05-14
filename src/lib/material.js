@@ -5,8 +5,9 @@ import {
   multiplyByScalar
 } from "./color";
 import { dot, multiply, negate, normalize, reflect, sub } from "./tuple";
+import { stripeAt } from "./pattern";
 
-const DEFAULT_COLOR = Color(1, 1, 1);
+const DEFAULT_COLOR = Color.White;
 const DEFAULT_AMBIENT = 0.1;
 const DEFAULT_DIFFUSE = 0.9;
 const DEFAULT_SPECULAR = 0.9;
@@ -18,7 +19,8 @@ export const Material = () => {
     ambient: DEFAULT_AMBIENT,
     diffuse: DEFAULT_DIFFUSE,
     specular: DEFAULT_SPECULAR,
-    shininess: DEFAULT_SHININESS
+    shininess: DEFAULT_SHININESS,
+    pattern: null
   };
 };
 
@@ -41,10 +43,16 @@ export const lighting = (
   normal,
   inShadow = false
 ) => {
-  let ambient, diffuse, specular;
+  let materialColor, ambient, diffuse, specular;
+
+  if (material.pattern) {
+    materialColor = stripeAt(material.pattern, pnt);
+  } else {
+    materialColor = material.color;
+  }
 
   // combine the surface color with the light's color/intensity
-  const effectiveColor = multiplyColor(material.color, light.intensity);
+  const effectiveColor = multiplyColor(materialColor, light.intensity);
 
   // find direction of light source
   const lightv = normalize(sub(light.position, pnt));

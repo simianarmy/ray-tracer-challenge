@@ -2,6 +2,7 @@ import { Material, lighting } from "./material";
 import { Color } from "./color";
 import { point, vector } from "./tuple";
 import { PointLight } from "./light";
+import { Stripe } from "./pattern";
 
 describe("Material", () => {
   it("should have default values", () => {
@@ -74,6 +75,22 @@ describe("Material", () => {
       const result = lighting(m, light, position, eyev, normalv, inShadow);
       const color = 0.1;
       expect(result).toEqualColor(Color(color, color, color));
+    });
+
+    describe("with pattern applied", () => {
+      it("should use pattern colors", () => {
+        m.pattern = Stripe(Color.White, Color.Black);
+        m.ambient = 1;
+        m.diffuse = 0;
+        m.specular = 0;
+        const eyev = vector(0, 0, -1);
+        const normalv = vector(0, 0, -1);
+        const light = PointLight(point(0, 0, -10), Color(1, 1, 1));
+        const c1 = lighting(m, light, point(0.9, 0, 0), eyev, normalv, false);
+        const c2 = lighting(m, light, point(1.1, 0, 0), eyev, normalv, false);
+        expect(c1).toEqualColor(Color.White);
+        expect(c2).toEqualColor(Color.Black);
+      });
     });
   });
 });
