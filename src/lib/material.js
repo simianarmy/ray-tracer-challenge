@@ -5,7 +5,6 @@ import {
   multiplyByScalar
 } from "./color";
 import { dot, multiply, negate, normalize, reflect, sub } from "./tuple";
-import { stripeAtObject } from "./pattern";
 
 const DEFAULT_COLOR = Color.White;
 const DEFAULT_AMBIENT = 0.1;
