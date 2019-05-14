@@ -48,7 +48,7 @@ export const lighting = (
   let materialColor, ambient, diffuse, specular;
 
   if (material.pattern) {
-    materialColor = stripeAtObject(material.pattern, object, pnt);
+    materialColor = material.pattern.patternAtShape(object, pnt);
   } else {
     materialColor = material.color;
   }
