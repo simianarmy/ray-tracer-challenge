@@ -68,3 +68,24 @@ export const render = (camera, world) => {
 
   return image;
 };
+
+/**
+ * Async version of render with callback fn called each pixel
+ */
+export const renderAsync = (camera, world, cb) => {
+  const image = new ColorCanvas(camera.hsize, camera.vsize);
+  let itr = 0;
+
+  for (let y = 0; y < camera.vsize; y++) {
+    for (let x = 0; x < camera.hsize; x++) {
+      const ray = rayForPixel(camera, x, y);
+      const color = colorAt(world, ray);
+      image.writePixel(x, y, color);
+      itr += 1;
+      cb({done: false, step: itr, color});
+    }
+  }
+
+  cb({done: true, image});
+}
+

@@ -80,7 +80,8 @@ class Gradient extends Pattern {
     const distance = sub(this.b, this.a);
     const fraction = p.x - Math.floor(p.x);
 
-    return add(this.a, multiply(distance, fraction));
+    const res = add(this.a, multiply(distance, fraction));
+    return Color(res.x, res.y, res.z);
   }
 }
 
