@@ -1,6 +1,6 @@
 import React from "react";
 
-import {  point, vector, World, Plane, Sphere, Color, PointLight, scaling, translation, rotationX, rotationZ, viewTransform, Camera, Stripe, Gradient, Ring, Checkers, render  } from "./lib/index";
+import {  point, vector, World, Plane, Sphere, Color, PointLight, scaling, translation, rotationX, rotationZ, viewTransform, Camera, Stripe, Gradient, RadialGradient, Ring, Checkers, render  } from "./lib/index";
 import { multiply } from "./lib/matrix";
 import { FileDownloadButton } from "./components/file-download-button";
 import "./App.css";
@@ -9,7 +9,7 @@ import "./App.css";
 const ProjectTitle = "Project 10";
 const HSIZE = 100;
 const VSIZE= 50;
-const RESOLUTION = 2;
+const RESOLUTION = 3;
 
 class Animation extends React.Component {
   castRays() {
@@ -76,7 +76,7 @@ class Animation extends React.Component {
     right.material.color = Color(0.5, 1, 0.1);
     right.material.diffuse = 0.7;
     right.material.specular = 0.3;
-    right.material.pattern = new Gradient(Color.White, Color.Black);
+    right.material.pattern = new RadialGradient(Color.White, Color(0, 0.2, 0.5));
     right.material.pattern.setTransform(multiply(rotationZ(0.5), scaling(0.1, 0.1, 0.2)));
 
     const left = new Sphere();

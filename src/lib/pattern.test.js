@@ -1,4 +1,4 @@
-import { testPattern, Stripe, Gradient, Ring, Checkers } from "./pattern";
+import { testPattern, Stripe, Gradient, RadialGradient, Ring, Checkers } from "./pattern";
 import { Color } from "./color";
 import { point } from "./tuple";
 import { Sphere } from "./sphere";
@@ -142,5 +142,23 @@ describe("Patterns", () => {
       expect(pattern.patternAt(point(0, 0, 0.99))).toEqualColor(Color.White);
       expect(pattern.patternAt(point(0, 0, 1.01))).toEqualColor(Color.Black);
     });
+  });
+
+  describe("RadialGradient", () => {
+    beforeEach(() => {
+      pattern = new RadialGradient(Color.White, Color.Black);
+    });
+
+    it("should linearly interpolate between colors", () => {
+      expect(pattern.patternAt(point(0, 0, 0))).toEqualColor(Color.White);
+      let received = pattern.patternAt(point(0.25, 0.5, 0));
+      const expected = Color(0.8543560, 0.8543560, 0.8543560);
+      expect(received).toEqualColor(expected);
+      received = pattern.patternAt(point(0.5, 0, 0));
+      expect(received).toEqualColor(
+        Color(0.8819660, 0.8819660, 0.8819660)
+      );
+    });
+
   });
 });

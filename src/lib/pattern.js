@@ -1,6 +1,6 @@
 import { Matrix, multiplyTuple, inverse } from "./matrix";
 import { Color } from "./color";
-import { sub, add, multiply } from "./tuple";
+import { sub, add, multiply, magnitude } from "./tuple";
 
 class Pattern {
   constructor() {
@@ -86,6 +86,30 @@ class Gradient extends Pattern {
 }
 
 /**
+ * Radial Gradient pattern
+ */
+class RadialGradient extends Pattern {
+  constructor(c1, c2) {
+    super();
+    this.a = c1;
+    this.b = c2;
+  }
+  /**
+   * @param {Point} p
+   * @returns {Color}
+   */
+  patternAt(p) {
+    // gradient calc
+    const distance = sub(this.b, this.a);
+    const mag = magnitude(p);
+    const fraction = mag - Math.floor(mag);
+
+    const res = add(this.a, multiply(distance, fraction));
+
+    return Color(res.x, res.y, res.z);
+  }
+}
+/**
  * Ring pattern
  * Concentric rings of 2 colors
  */
@@ -132,4 +156,4 @@ class Checkers extends Pattern {
   }
 }
 
-export { Stripe, Gradient, Ring, Checkers };
+export { Stripe, Gradient, RadialGradient, Ring, Checkers };
