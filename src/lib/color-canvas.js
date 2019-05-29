@@ -86,10 +86,10 @@ export class ColorCanvas {
     let pixels = new Uint8ClampedArray(this.width * this.height * 4);
 
     for (let i = 0, pi = 0; i < this.data.length; i++, pi += 4) {
-      pixels[pi] = this.data[i].red;
-      pixels[pi + 1] = this.data[i].green;
-      pixels[pi + 2] = this.data[i].blue;
-      pixels[pi + 3] = 0;
+      pixels[pi] = colorToPPM_RGB(this.data[i].red);
+      pixels[pi + 1] = colorToPPM_RGB(this.data[i].green);
+      pixels[pi + 2] = colorToPPM_RGB(this.data[i].blue);
+      pixels[pi + 3] = 254;
     }
 
     return new ImageData(pixels, this.width, this.height);
