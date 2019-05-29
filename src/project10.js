@@ -29,7 +29,7 @@ import "./App.css";
 const ProjectTitle = "Project 10";
 const HSIZE = 100;
 const VSIZE = 50;
-const RESOLUTION = 1;
+const RESOLUTION = 2;
 
 class Animation extends React.Component {
   castRays() {
@@ -41,10 +41,10 @@ class Animation extends React.Component {
     var ctx = previewCanvas.getContext("2d");
     const imageData = canvas.toHTML5CanvasImageData();
 
-    console.log("got image data", imageData);
     ctx.putImageData(imageData, 0, 0);
 
     this.setState({
+      canvas,
       imgBlob: new Blob([ppmData], { type: "text/plain;charset=utf-8" }),
       ready: true,
       imgFileName: `${ProjectTitle}.ppm`
@@ -144,9 +144,11 @@ class Animation extends React.Component {
   }
 
   render() {
+    const { ready, camera } = this.state;
+
     return (
       <>
-        {this.state.ready ? (
+        {ready ? (
           <div>
             <h1>File generated</h1> (<FileDownloadButton
               fileBlob={this.state.imgBlob}
@@ -156,7 +158,7 @@ class Animation extends React.Component {
         ) : (
           <h1>Generating...</h1>
         )}
-        <canvas id="ppmPreview" width={300} height={200} />
+      <canvas id="ppmPreview" width={camera.hsize} height={camera.vsize} style={{marginTop: "32px"}}/>
       </>
     );
   }

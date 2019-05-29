@@ -84,12 +84,17 @@ export class ColorCanvas {
 
   toHTML5CanvasImageData() {
     let pixels = new Uint8ClampedArray(this.width * this.height * 4);
+    let pi = 0;
 
-    for (let i = 0, pi = 0; i < this.data.length; i++, pi += 4) {
-      pixels[pi] = colorToPPM_RGB(this.data[i].red);
-      pixels[pi + 1] = colorToPPM_RGB(this.data[i].green);
-      pixels[pi + 2] = colorToPPM_RGB(this.data[i].blue);
-      pixels[pi + 3] = 254;
+    for (let i = 0; i < this.height; i++) {
+      for (let j = 0; j < this.width; j++) {
+        const c = this.getPixel(j, i);
+        pixels[pi] = scaleColorToPPM(c.red);
+        pixels[pi + 1] = scaleColorToPPM(c.green);
+        pixels[pi + 2] = scaleColorToPPM(c.blue);
+        pixels[pi + 3] = 255;
+        pi += 4;
+      }
     }
 
     return new ImageData(pixels, this.width, this.height);
