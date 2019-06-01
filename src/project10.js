@@ -11,6 +11,7 @@ import {
   scaling,
   translation,
   rotationX,
+  rotationY,
   rotationZ,
   viewTransform,
   Camera,
@@ -19,6 +20,7 @@ import {
   RadialGradient,
   Ring,
   Checkers,
+  SolidPattern,
   render
 } from "./lib/index";
 import { multiply } from "./lib/matrix";
@@ -27,26 +29,34 @@ import "./App.css";
 
 // Control resolution = render time
 const ProjectTitle = "Project 10";
-const HSIZE = 100;
-const VSIZE = 50;
-const RESOLUTION = 2;
+const HSIZE = 200;
+const VSIZE = 100;
+const RESOLUTION = 1;
+const CANVAS_SCALE = 4;
 
 class Animation extends React.Component {
   castRays() {
     const { camera, world } = this.state;
 
+    // synchronous render, result is fully rendered world
     const canvas = render(camera, world);
     const ppmData = canvas.saveToPPM();
+
+    // draw ppm to canvas for preview, scaled up
     const previewCanvas = document.querySelector("#ppmPreview");
     var ctx = previewCanvas.getContext("2d");
     const imageData = canvas.toHTML5CanvasImageData();
 
     ctx.putImageData(imageData, 0, 0);
 
+    let tmpCanvas = document.querySelector("#tempCanvas");
+    tmpCanvas.width = imageData.width * CANVAS_SCALE;
+    tmpCanvas.height = imageData.height * CANVAS_SCALE;
+    tmpCanvas.getContext("2d").drawImage(previewCanvas, 0, 0, imageData.width, imageData.height, 0, 0, imageData.width * CANVAS_SCALE, imageData.height * CANVAS_SCALE);
+
     this.setState({
-      canvas,
-      imgBlob: new Blob([ppmData], { type: "text/plain;charset=utf-8" }),
       ready: true,
+      imgBlob: new Blob([ppmData], { type: "text/plain;charset=utf-8" }),
       imgFileName: `${ProjectTitle}.ppm`
     });
   }
@@ -54,17 +64,22 @@ class Animation extends React.Component {
   constructor(props) {
     super(props);
 
+    let stripe1 = new Stripe(new SolidPattern(Color(0.2, 0.4, 0.5)), new SolidPattern(Color(1, 1, 1)));
+    stripe1.setTransform(multiply(rotationY(0.5), scaling(0.2, 0.2, 0.2)));
+    const stripe2 = new Stripe(new SolidPattern(Color(0, 0.5, 0.8)), new SolidPattern(Color(1, 0, 0.2)));
+    stripe2.setTransform(multiply(rotationY(-0.5), scaling(0.1, 0.1, 0.1)));
+
     const floor = new Plane();
     floor.material.color = Color(1, 0.9, 0.9);
     floor.material.specular = 0;
-    floor.material.pattern = new Stripe(Color(1, 0.5, 0.2), Color(0, 0, 0));
-    floor.material.pattern.setTransform(scaling(0.1, 0.1, 0.2));
-
+    floor.material.pattern = new Checkers(stripe1, stripe2);
+    //
     const backWall = new Plane();
     backWall.setTransform(
       multiply(translation(0, 0, 10), rotationX(Math.PI / 2))
     );
-    backWall.material.pattern = new Ring(Color(0.2, 0.4, 0.5), Color(1, 1, 1));
+    backWall.material.pattern = new Ring(new SolidPattern(Color(0.2, 0, 0.2)), new SolidPattern(Color(1, 1, 0.5)));
+    backWall.material.pattern.setTransform(multiply(rotationY(0.5), scaling(0.2, 0.2, 0.2)));
 
     /*
     const rightWall = Sphere();
@@ -88,7 +103,7 @@ class Animation extends React.Component {
     middle.material.color = Color(0.1, 1, 0.5);
     middle.material.diffuse = 0.7;
     middle.material.specular = 0.3;
-    middle.material.pattern = new Checkers(Color(1, 0, 0.2), Color(0, 0, 1));
+    middle.material.pattern = new Checkers(new SolidPattern(Color(0, 1, 0.2)), new SolidPattern(Color(0, 1, 1)));
     middle.material.pattern.setTransform(
       multiply(rotationZ(0.5), scaling(0.1, 0.1, 0.2))
     );
@@ -101,8 +116,8 @@ class Animation extends React.Component {
     right.material.diffuse = 0.7;
     right.material.specular = 0.3;
     right.material.pattern = new RadialGradient(
-      Color.White,
-      Color(0, 0.2, 0.5)
+      new SolidPattern(Color.White),
+      new SolidPattern(Color(0, 0.2, 0.5))
     );
     right.material.pattern.setTransform(
       multiply(rotationZ(0.5), scaling(0.1, 0.1, 0.2))
@@ -115,7 +130,7 @@ class Animation extends React.Component {
     left.material.color = Color(1, 0.8, 0.1);
     left.material.diffuse = 0.7;
     left.material.specular = 0.3;
-    left.material.pattern = new Gradient(Color(0.2, 0.4, 1), Color(1, 0, 0));
+    left.material.pattern = new Gradient(new SolidPattern(Color(0.2, 0.4, 1)), new SolidPattern(Color(1, 0, 0)));
 
     const world = World();
     world.objects = [floor, backWall, middle, right, left];
@@ -148,17 +163,21 @@ class Animation extends React.Component {
 
     return (
       <>
-        {ready ? (
-          <div>
-            <h1>File generated</h1> (<FileDownloadButton
-              fileBlob={this.state.imgBlob}
-              fileName={this.state.imgFileName}
-            />)
-          </div>
-        ) : (
-          <h1>Generating...</h1>
-        )}
-      <canvas id="ppmPreview" width={camera.hsize} height={camera.vsize} style={{marginTop: "32px"}}/>
+      {ready || (
+        <>
+        <h1>Generating...</h1>
+        <canvas id="ppmPreview" width={camera.hsize} height={camera.vsize} style={{marginTop: "32px"}}/>
+        </>
+      )}
+      <canvas id="tempCanvas" />
+      {ready && (
+        <>
+        <FileDownloadButton
+        fileBlob={this.state.imgBlob}
+        fileName={this.state.imgFileName}
+        />
+        </>
+      )}
       </>
     );
   }

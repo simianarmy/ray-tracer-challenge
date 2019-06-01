@@ -2,7 +2,7 @@ import { Material, lighting } from "./material";
 import { Color } from "./color";
 import { point, vector } from "./tuple";
 import { PointLight } from "./light";
-import { Stripe } from "./pattern";
+import { Stripe, SolidPattern } from "./pattern";
 import { Sphere } from "./sphere";
 
 describe("Material", () => {
@@ -89,7 +89,7 @@ describe("Material", () => {
 
     describe("with pattern applied", () => {
       it("should use pattern colors", () => {
-        m.pattern = new Stripe(Color.White, Color.Black);
+        m.pattern = new Stripe(new SolidPattern(Color.White), new SolidPattern(Color.Black));
         m.ambient = 1;
         m.diffuse = 0;
         m.specular = 0;

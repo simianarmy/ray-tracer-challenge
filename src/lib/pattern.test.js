@@ -1,4 +1,4 @@
-import { testPattern, Stripe, Gradient, RadialGradient, Ring, Checkers } from "./pattern";
+import { testPattern, Stripe, Gradient, RadialGradient, Ring, Checkers, SolidPattern } from "./pattern";
 import { Color } from "./color";
 import { point } from "./tuple";
 import { Sphere } from "./sphere";
@@ -52,13 +52,14 @@ describe("Patterns", () => {
 
   describe("Stripe", () => {
     beforeEach(() => {
-      pattern = new Stripe(Color.White, Color.Black);
+      pattern = new Stripe(new SolidPattern(Color.White), new SolidPattern(Color.Black));
     });
 
     describe("creating", () => {
       it("should store 2 colors", () => {
-        expect(pattern.a).toEqual(Color.White);
-        expect(pattern.b).toEqual(Color.Black);
+        const p0 = point(0, 0, 0);
+        expect(pattern.a.patternAt(p0)).toEqual(Color.White);
+        expect(pattern.b.patternAt(p0)).toEqual(Color.Black);
       });
     });
 
@@ -88,7 +89,7 @@ describe("Patterns", () => {
 
   describe("Gradient", () => {
     beforeEach(() => {
-      pattern = new Gradient(Color.White, Color.Black);
+      pattern = new Gradient(new SolidPattern(Color.White), new SolidPattern(Color.Black));
     });
 
     it("should linearly interpolate between colors", () => {
@@ -107,7 +108,7 @@ describe("Patterns", () => {
 
   describe("Ring", () => {
     beforeEach(() => {
-      pattern = new Ring(Color.White, Color.Black);
+      pattern = new Ring(new SolidPattern(Color.White), new SolidPattern(Color.Black));
     });
 
     it("should extend in both x and z", () => {
@@ -122,7 +123,7 @@ describe("Patterns", () => {
 
   describe("Checkers", () => {
     beforeEach(() => {
-      pattern = new Checkers(Color.White, Color.Black);
+      pattern = new Checkers(new SolidPattern(Color.White), new SolidPattern(Color.Black));
     });
 
     it("should repeat in x", () => {
@@ -146,7 +147,7 @@ describe("Patterns", () => {
 
   describe("RadialGradient", () => {
     beforeEach(() => {
-      pattern = new RadialGradient(Color.White, Color.Black);
+      pattern = new RadialGradient(new SolidPattern(Color.White), new SolidPattern(Color.Black));
     });
 
     it("should linearly interpolate between colors", () => {

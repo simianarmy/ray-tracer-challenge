@@ -15,6 +15,13 @@ class Pattern {
     this.transformation = t;
   }
 
+  getPatternPoint(localPoint) {
+    return multiplyTuple(
+      inverse(this.getTransform()),
+      localPoint
+    );
+  }
+
   /**
    * @param {Shape} object
    * @param {Point} p
@@ -22,16 +29,12 @@ class Pattern {
    */
   patternAtShape(object, p) {
     const localPoint = multiplyTuple(inverse(object.getTransform()), p);
-    const patternPoint = multiplyTuple(
-      inverse(this.getTransform()),
-      localPoint
-    );
-
-    return this.patternAt(patternPoint);
+    return this.patternAt(localPoint);
   }
 
   patternAt(p) {
-    return Color(p.x, p.y, p.z);
+    const pp = this.getPatternPoint(p);
+    return Color(pp.x, pp.y, pp.z);
   }
 }
 
@@ -41,23 +44,25 @@ export const testPattern = () => {
 
 /**
  * Stripe pattern
- * Alternates between 2 colors
+ * Alternates between 2 patterns
  */
 class Stripe extends Pattern {
-  constructor(c1, c2) {
+  constructor(p1, p2) {
     super();
-    this.a = c1;
-    this.b = c2;
+    this.a = p1;
+    this.b = p2;
   }
   /**
    * @param {Point} p
    * @returns {Color}
    */
   patternAt(p) {
-    if (Math.floor(p.x) % 2 === 0) {
-      return this.a;
+    const pp = this.getPatternPoint(p);
+
+    if (Math.floor(pp.x) % 2 === 0) {
+      return this.a.patternAt(pp);
     } else {
-      return this.b;
+      return this.b.patternAt(pp);
     }
   }
 }
@@ -67,20 +72,23 @@ class Stripe extends Pattern {
  * Linear gradient between 2 colors
  */
 class Gradient extends Pattern {
-  constructor(c1, c2) {
+  constructor(p1, p2) {
     super();
-    this.a = c1;
-    this.b = c2;
+    this.a = p1;
+    this.b = p2;
   }
+
   /**
    * @param {Point} p
    * @returns {Color}
    */
   patternAt(p) {
-    const distance = sub(this.b, this.a);
-    const fraction = p.x - Math.floor(p.x);
+    const pp = this.getPatternPoint(p);
 
-    const res = add(this.a, multiply(distance, fraction));
+    const distance = sub(this.b.patternAt(pp), this.a.patternAt(pp));
+    const fraction = pp.x - Math.floor(pp.x);
+
+    const res = add(this.a.patternAt(pp), multiply(distance, fraction));
     return Color(res.x, res.y, res.z);
   }
 }
@@ -89,22 +97,24 @@ class Gradient extends Pattern {
  * Radial Gradient pattern
  */
 class RadialGradient extends Pattern {
-  constructor(c1, c2) {
+  constructor(p1, p2) {
     super();
-    this.a = c1;
-    this.b = c2;
+    this.a = p1;
+    this.b = p2;
   }
   /**
    * @param {Point} p
    * @returns {Color}
    */
   patternAt(p) {
+    const pp = this.getPatternPoint(p);
+
     // gradient calc
-    const distance = sub(this.b, this.a);
-    const mag = magnitude(p);
+    const distance = sub(this.b.patternAt(pp), this.a.patternAt(pp));
+    const mag = magnitude(pp);
     const fraction = mag - Math.floor(mag);
 
-    const res = add(this.a, multiply(distance, fraction));
+    const res = add(this.a.patternAt(pp), multiply(distance, fraction));
 
     return Color(res.x, res.y, res.z);
   }
@@ -114,10 +124,10 @@ class RadialGradient extends Pattern {
  * Concentric rings of 2 colors
  */
 class Ring extends Pattern {
-  constructor(c1, c2) {
+  constructor(p1, p2) {
     super();
-    this.a = c1;
-    this.b = c2;
+    this.a = p1;
+    this.b = p2;
   }
 
   /**
@@ -125,10 +135,12 @@ class Ring extends Pattern {
    * @returns {Color}
    */
   patternAt(p) {
-    if (Math.floor(Math.sqrt(Math.pow(p.x, 2) + Math.pow(p.z, 2))) % 2 === 0) {
-      return this.a;
+    const pp = this.getPatternPoint(p);
+
+    if (Math.floor(Math.sqrt(Math.pow(pp.x, 2) + Math.pow(pp.z, 2))) % 2 === 0) {
+      return this.a.patternAt(pp);
     } else {
-      return this.b;
+      return this.b.patternAt(pp);
     }
   }
 }
@@ -137,10 +149,10 @@ class Ring extends Pattern {
  * 3D Checkers pattern
  */
 class Checkers extends Pattern {
-  constructor(c1, c2) {
+  constructor(p1, p2) {
     super();
-    this.a = c1;
-    this.b = c2;
+    this.a = p1;
+    this.b = p2;
   }
 
   /**
@@ -148,12 +160,42 @@ class Checkers extends Pattern {
    * @returns {Color}
    */
   patternAt(p) {
-    if ((Math.floor(p.x) + Math.floor(p.y) + Math.floor(p.z)) % 2 === 0) {
-      return this.a;
+    const pp = this.getPatternPoint(p);
+
+    if ((Math.floor(pp.x) + Math.floor(pp.y) + Math.floor(pp.z)) % 2 === 0) {
+      return this.a.patternAt(pp);
     } else {
-      return this.b;
+      return this.b.patternAt(pp);
     }
   }
 }
 
-export { Stripe, Gradient, RadialGradient, Ring, Checkers };
+/**
+ * Solid pattern
+ */
+class SolidPattern extends Pattern {
+  constructor(color) {
+    super();
+    this.a = color;
+  }
+
+  patternAt(p) {
+    return this.a;
+  }
+}
+
+/**
+ * Nested pattern
+ */
+class NestedPattern extends Pattern {
+  constructor(p1, p2) {
+    super();
+    this.a = p1;
+    this.b = p2;
+  }
+
+  patternAt(p) {
+  }
+}
+
+export { Stripe, Gradient, RadialGradient, Ring, Checkers, SolidPattern };
