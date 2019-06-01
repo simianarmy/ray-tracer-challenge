@@ -20,6 +20,8 @@ import {
   RadialGradient,
   Ring,
   Checkers,
+  Blended,
+  Perturbed,
   SolidPattern,
   render
 } from "./lib/index";
@@ -72,7 +74,7 @@ class Animation extends React.Component {
     const floor = new Plane();
     floor.material.color = Color(1, 0.9, 0.9);
     floor.material.specular = 0;
-    floor.material.pattern = new Checkers(stripe1, stripe2);
+    floor.material.pattern = new Blended(stripe1, stripe2);
     //
     const backWall = new Plane();
     backWall.setTransform(
@@ -103,7 +105,7 @@ class Animation extends React.Component {
     middle.material.color = Color(0.1, 1, 0.5);
     middle.material.diffuse = 0.7;
     middle.material.specular = 0.3;
-    middle.material.pattern = new Checkers(new SolidPattern(Color(0, 1, 0.2)), new SolidPattern(Color(0, 1, 1)));
+    middle.material.pattern = new Perturbed(new Checkers(new SolidPattern(Color(0, 1, 0.2)), new SolidPattern(Color(0, 1, 1))));
     middle.material.pattern.setTransform(
       multiply(rotationZ(0.5), scaling(0.1, 0.1, 0.2))
     );

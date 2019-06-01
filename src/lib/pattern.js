@@ -1,6 +1,7 @@
 import { Matrix, multiplyTuple, inverse } from "./matrix";
 import { Color } from "./color";
-import { sub, add, multiply, magnitude } from "./tuple";
+import { sub, add, divide, multiply, magnitude } from "./tuple";
+import { perlin } from "./math";
 
 class Pattern {
   constructor() {
@@ -184,18 +185,39 @@ class SolidPattern extends Pattern {
   }
 }
 
-/**
- * Nested pattern
- */
-class NestedPattern extends Pattern {
+class Blended extends Pattern {
   constructor(p1, p2) {
     super();
-    this.a = p1;
-    this.b = p2;
+    this.p1 = p1;
+    this.p2 = p2;
   }
 
   patternAt(p) {
+    const pp = this.getPatternPoint(p);
+    const c1 = this.p1.patternAt(pp);
+    const c2 = this.p2.patternAt(pp);
+    const avg = divide(add(c1, c2), 2);
+
+    return Color(avg.x, avg.y, avg.z);
   }
 }
 
-export { Stripe, Gradient, RadialGradient, Ring, Checkers, SolidPattern };
+class Perturbed extends Pattern {
+  constructor(p) {
+    super();
+    this.p1 = p;
+    this.scaleFactor = 1;
+  }
+
+  patternAt(p) {
+    const pp = this.getPatternPoint(p);
+    const c = this.p1.patternAt(pp);
+    const noiseX = c.x + perlin(c.x, c.y, c.z) * this.scaleFactor;
+    const noiseY = c.y + perlin(c.x, c.y, c.z + 1) * this.scaleFactor;
+    const noiseZ = c.z + perlin(c.x, c.y, c.z + 2) * this.scaleFactor;
+    console.log("perturbed ", c, noiseX, noiseY, noiseZ);
+    return Color(noiseX, noiseY, noiseZ);
+  }
+}
+
+export { Stripe, Gradient, RadialGradient, Ring, Checkers, Blended, SolidPattern, Perturbed };

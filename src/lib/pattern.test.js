@@ -1,4 +1,4 @@
-import { testPattern, Stripe, Gradient, RadialGradient, Ring, Checkers, SolidPattern } from "./pattern";
+import { testPattern, Stripe, Gradient, RadialGradient, Ring, Checkers, Blended, SolidPattern, Perturbed } from "./pattern";
 import { Color } from "./color";
 import { point } from "./tuple";
 import { Sphere } from "./sphere";
@@ -160,6 +160,29 @@ describe("Patterns", () => {
         Color(0.8819660, 0.8819660, 0.8819660)
       );
     });
+  });
 
+  describe("Blended", () => {
+    beforeEach(() => {
+      pattern = new Blended(new SolidPattern(Color.White), new SolidPattern(Color.Black));
+    });
+
+    it("should blend colors of 2 patterns", () => {
+      expect(pattern.patternAt(point(0, 0, 0))).toEqualColor(Color(0.5, 0.5, 0.5));
+      expect(pattern.patternAt(point(1, 1, 1))).toEqualColor(Color(0.5, 0.5, 0.5));
+    });
+  });
+
+  describe("Perturbed", () => {
+    beforeEach(() => {
+      pattern == new Gradient(new SolidPattern(Color.White), new SolidPattern(Color.Blue));
+    });
+
+    it("should change pattern colors by a small fraction", () => {
+      const perturbed = new Perturbed(pattern);
+      const c = pattern.patternAt(point(0.5, 0.5, 0.5));
+      const pc = perturbed.patternAt(point(0.5, 0.5, 0.5));
+      expect(pc).not.toEqualColor(c);
+    });
   });
 });
