@@ -1,4 +1,4 @@
-import { point, sub, magnitude, normalize, multiply } from "./tuple";
+import { point, add, sub, magnitude, normalize, multiply } from "./tuple";
 import { PointLight } from "./light";
 import { Color } from "./color";
 import { Sphere } from "./sphere";
@@ -6,6 +6,9 @@ import { Ray } from "./ray";
 import { scaling } from "./transformations";
 import { lighting } from "./material";
 import { hit, prepareComputations } from "./intersection";
+
+// Maximum recursion level for colorAt, shadeHit, reflectColor
+const MAX_RECURSION_DEPTH = 4;
 
 export const World = () => {
   return {
@@ -52,12 +55,12 @@ export const intersectWorld = (world, ray) => {
 /**
  * @param {World} world
  * @param {Object} comps
+ * @param {Number} remaining recursion limiter
  * @returns {Color}
  */
-export const shadeHit = (world, comps) => {
+export const shadeHit = (world, comps, remaining = MAX_RECURSION_DEPTH) => {
   const shadowed = isShadowed(world, comps.overPoint);
-
-  return lighting(
+  const surface = lighting(
     comps.object.material,
     comps.object,
     world.lightSource,
@@ -66,12 +69,15 @@ export const shadeHit = (world, comps) => {
     comps.normalv,
     shadowed
   );
+  const reflected = reflectedColor(world, comps, remaining);
+
+  return Color.fromPoint(add(surface, reflected));
 };
 
 /**
  * @returns {Color}
  */
-export const colorAt = (world, ray) => {
+export const colorAt = (world, ray, remaining = MAX_RECURSION_DEPTH) => {
   const xs = intersectWorld(world, ray);
   const is = hit(xs);
 
@@ -80,7 +86,8 @@ export const colorAt = (world, ray) => {
   }
 
   const comps = prepareComputations(is, ray);
-  return shadeHit(world, comps);
+
+  return shadeHit(world, comps, remaining);
 };
 
 /**
@@ -99,13 +106,16 @@ export const isShadowed = (world, p) => {
   return h && h.t < distance;
 };
 
-export const reflectedColor = (world, comps) => {
-  if (comps.object.material.reflective > 0) {
+/**
+ * @returns {Color}
+ */
+export const reflectedColor = (world, comps, remaining) => {
+  if (comps.object.material.reflective === 0 || remaining < 1) {
+    return Color.Black;
+  } else {
     const reflectRay = Ray(comps.overPoint, comps.reflectv);
-    const color = colorAt(world, reflectRay);
+    const color = colorAt(world, reflectRay, remaining - 1);
 
     return Color.fromPoint(multiply(color, comps.object.material.reflective));
-  } else {
-    return Color.Black;
   }
 };

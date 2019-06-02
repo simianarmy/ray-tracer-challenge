@@ -115,6 +115,19 @@ describe("World", () => {
       const expected = shadeHit(w, comps);
       expect(expected).toEqualColor(Color(0.1, 0.1, 0.1));
     });
+
+    it("should include reflective color of an object", () => {
+      const w = World.Default();
+      const shape = new Plane();
+      shape.material.reflective = 0.5;
+      shape.setTransform(translation(0, -1, 0));
+      w.objects.push(shape);
+      const r = Ray(point(0, 0, -3), vector(0, -Math.sqrt(2) / 2, Math.sqrt(2) / 2));
+      const is = Intersection(Math.sqrt(2), shape);
+      const comps = prepareComputations(is, r);
+      const color = shadeHit(w, comps);
+      expect(color).toEqualColor(Color(0.87675, 0.92434, 0.82917));
+    });
   });
 
   describe("colorAt", () => {
@@ -125,14 +138,14 @@ describe("World", () => {
       expect(expected).toEqualColor(Color.Black);
     });
 
-    it("when ray hits", () => {
+    it("should return material color when ray hits", () => {
       const w = World.Default();
       const r = Ray(point(0, 0, -5), vector(0, 0, 1));
       const expected = colorAt(w, r);
       expect(expected).toEqualColor(Color(0.38066, 0.47583, 0.2855));
     });
 
-    it("when intersection behind ray", () => {
+    it("should return inner material colro when intersection behind ray", () => {
       const w = World.Default();
       const outer = w.objects[0];
       outer.material.ambient = 1;
@@ -142,6 +155,25 @@ describe("World", () => {
       const r = Ray(point(0, 0, 0.75), vector(0, 0, -1));
       const expected = colorAt(w, r);
       expect(expected).toEqualColor(inner.material.color);
+    });
+
+    describe("with mutually reflective surfaces", () => {
+      it("should terminate recursion", () => {
+        const w = World();
+        w.lightSource = PointLight(point(0, 0, 0), Color.White);
+        const lower = new Plane();
+        lower.material.reflective = 1;
+        lower.setTransform(translation(0, -1, 0));
+        w.objects.push(lower);
+
+        const upper = new Plane();
+        upper.material.reflective = 1;
+        upper.setTransform(translation(0, 1, 0));
+        w.objects.push(upper);
+
+        const r = Ray(point(0, 0, 0), vector(0, 1, 0));
+        expect(() => colorAt(w, r)).not.toThrow(RangeError);
+      });
     });
   });
 
@@ -194,6 +226,21 @@ describe("World", () => {
       const comps = prepareComputations(is, r);
       const color = reflectedColor(w, comps);
       expect(color).toEqualColor(Color(0.190332, 0.237915, 0.142749));
+    });
+
+    describe("at maximum recursive depth", () => {
+      it("should return black", () => {
+        const w = World.Default();
+        const shape = new Plane();
+        shape.material.reflective = 0.5;
+        shape.setTransform(translation(0, -1, 0));
+        w.objects.push(shape);
+        const r = Ray(point(0, 0, -3), vector(0, -Math.sqrt(2) / 2, Math.sqrt(2) / 2));
+        const is = Intersection(Math.sqrt(2), shape);
+        const comps = prepareComputations(is, r);
+        const color = reflectedColor(w, comps, 0);
+        expect(color).toEqualColor(Color.Black);
+      });
     });
   });
 });
