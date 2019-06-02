@@ -1,5 +1,5 @@
 import { position } from "./ray";
-import { add, dot, negate, multiply } from "./tuple";
+import { add, dot, negate, multiply, reflect } from "./tuple";
 import { EPSILON } from "./math";
 
 /**
@@ -65,6 +65,9 @@ export const prepareComputations = (is, ray) => {
   // prevent acne by placing intersection point slightly 'above' point in
   // direction of normalv
   comps.overPoint = add(comps.point, multiply(comps.normalv, EPSILON));
+
+  // compute reflection vector
+  comps.reflectv = reflect(ray.direction, comps.normalv);
 
   return comps;
 }

@@ -1,5 +1,6 @@
 import { Intersection, intersections, hit, prepareComputations } from "./intersection";
 import { Sphere } from "./sphere";
+import { Plane } from "./plane";
 import { Ray } from "./ray";
 import { point, vector } from "./tuple";
 import { translation } from "./transformations";
@@ -106,6 +107,15 @@ describe("hit", () => {
       const comps = prepareComputations(is, r);
       expect(comps.overPoint.z).toBeLessThan(-Number.EPSILON / 2);
       expect(comps.point.z).toBeGreaterThan(comps.overPoint.z);
+    });
+
+    it("precomputes the reflection vector", () => {
+      const angle = Math.sqrt(2) / 2;
+      const plane = new Plane();
+      const r = Ray(point(0, 1, -1), vector(0, -angle, angle));
+      const is = Intersection(Math.sqrt(2), plane);
+      const comps = prepareComputations(is, r);
+      expect(comps.reflectv).toEqualVector(vector(0, angle, angle));
     });
   });
 });

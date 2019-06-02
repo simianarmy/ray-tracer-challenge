@@ -215,7 +215,6 @@ class Perturbed extends Pattern {
     const noiseY = perlin(pp.x, pp.y + 0.2, pp.z + 1.1) * this.scaleFactor;
     const noiseZ = perlin(pp.x, pp.y + 0.3, pp.z + 2.1) * this.scaleFactor;
 
-    //console.log("perturbed ", pp, noiseX, noiseY, noiseZ);
     return this.p1.patternAt(point(pp.x + noiseX, pp.y + noiseY, pp.z + noiseZ));
   }
 }

@@ -11,6 +11,7 @@ const DEFAULT_AMBIENT = 0.1;
 const DEFAULT_DIFFUSE = 0.9;
 const DEFAULT_SPECULAR = 0.9;
 const DEFAULT_SHININESS = 200;
+const DEFAULT_REFLECTIVE = 0.0;
 
 export const Material = () => {
   return {
@@ -19,6 +20,7 @@ export const Material = () => {
     diffuse: DEFAULT_DIFFUSE,
     specular: DEFAULT_SPECULAR,
     shininess: DEFAULT_SHININESS,
+    reflective: DEFAULT_REFLECTIVE,
     pattern: null
   };
 };

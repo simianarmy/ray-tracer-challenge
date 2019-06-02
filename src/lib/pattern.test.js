@@ -175,7 +175,7 @@ describe("Patterns", () => {
 
   describe("Perturbed", () => {
     beforeEach(() => {
-      pattern == new Gradient(new SolidPattern(Color.White), new SolidPattern(Color.Blue));
+      pattern = new Gradient(new SolidPattern(Color.White), new SolidPattern(Color.Blue));
     });
 
     it("should change pattern colors by a small fraction", () => {

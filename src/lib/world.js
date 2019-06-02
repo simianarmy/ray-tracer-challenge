@@ -1,4 +1,4 @@
-import { point, sub, magnitude, normalize } from "./tuple";
+import { point, sub, magnitude, normalize, multiply } from "./tuple";
 import { PointLight } from "./light";
 import { Color } from "./color";
 import { Sphere } from "./sphere";
@@ -97,4 +97,15 @@ export const isShadowed = (world, p) => {
   const h = hit(xs);
 
   return h && h.t < distance;
+};
+
+export const reflectedColor = (world, comps) => {
+  if (comps.object.material.reflective > 0) {
+    const reflectRay = Ray(comps.overPoint, comps.reflectv);
+    const color = colorAt(world, reflectRay);
+
+    return Color.fromPoint(multiply(color, comps.object.material.reflective));
+  } else {
+    return Color.Black;
+  }
 };

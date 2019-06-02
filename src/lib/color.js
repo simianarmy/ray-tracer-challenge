@@ -6,6 +6,8 @@ export const Color = (r, g, b) => {
   return { ...p, red: p.x, green: p.y, blue: p.z };
 };
 
+Color.fromPoint = p => Color(p.x, p.y, p.z);
+
 Color.Black = Color(0, 0, 0);
 Color.Red = Color(1, 0, 0);
 Color.Green = Color(0, 1, 0);

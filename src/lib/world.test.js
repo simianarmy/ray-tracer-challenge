@@ -1,9 +1,10 @@
-import { World, colorAt, intersectWorld, shadeHit, isShadowed } from "./world";
+import { World, colorAt, intersectWorld, shadeHit, isShadowed, reflectedColor } from "./world";
 import { point, vector } from "./tuple";
 import { PointLight } from "./light";
 import { Color } from "./color";
 import { Sphere } from "./sphere";
 import { Ray } from "./ray";
+import { Plane } from "./plane";
 import { scaling, translation } from "./transformations";
 import { Intersection, prepareComputations } from "./intersection";
 
@@ -167,6 +168,32 @@ describe("World", () => {
       const w = World.Default();
       const p = point(-2, 2, -2);
       expect(isShadowed(w, p)).not.toBeTruthy();
+    });
+  });
+
+  describe("reflection", () => {
+    it("should calculate color from nonreflective surface", () => {
+      const w = World.Default();
+      const r = Ray(point(0, 0, 0), vector(0, 0, 1));
+      const shape = w.objects[1];
+      shape.material.ambient = 1;
+      const is = Intersection(1, shape);
+      const comps = prepareComputations(is, r);
+      const color = reflectedColor(w, comps);
+      expect(color).toEqualColor(Color.Black);
+    });
+
+    it("should calculate color from reflective surface", () => {
+      const w = World.Default();
+      const shape = new Plane();
+      shape.material.reflective = 0.5;
+      shape.setTransform(translation(0, -1, 0));
+      w.objects.push(shape);
+      const r = Ray(point(0, 0, -3), vector(0, -Math.sqrt(2) / 2, Math.sqrt(2) / 2));
+      const is = Intersection(Math.sqrt(2), shape);
+      const comps = prepareComputations(is, r);
+      const color = reflectedColor(w, comps);
+      expect(color).toEqualColor(Color(0.190332, 0.237915, 0.142749));
     });
   });
 });
