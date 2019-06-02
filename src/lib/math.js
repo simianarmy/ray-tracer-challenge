@@ -8,11 +8,9 @@ export const degreesToRadians = d => d / 180 * Math.PI;
 export const perlin = (x, y, z) => {
   // one time initialization of Noise object
   if (!perlin.Noise) {
-    console.log("constructing Noise");
     perlin.Noise = new Noise(Math.random());
   }
 
-  console.log("passing", x, y, z);
   return perlin.Noise.perlin3(x, y, z);
 }
 

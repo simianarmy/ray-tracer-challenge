@@ -33,8 +33,8 @@ import "./App.css";
 const ProjectTitle = "Project 10";
 const HSIZE = 200;
 const VSIZE = 100;
-const RESOLUTION = 1;
-const CANVAS_SCALE = 4;
+const RESOLUTION = 2;
+const CANVAS_SCALE = 2;
 
 class Animation extends React.Component {
   castRays() {
@@ -81,7 +81,7 @@ class Animation extends React.Component {
       multiply(translation(0, 0, 10), rotationX(Math.PI / 2))
     );
     backWall.material.pattern = new Ring(new SolidPattern(Color(0.2, 0, 0.2)), new SolidPattern(Color(1, 1, 0.5)));
-    backWall.material.pattern.setTransform(multiply(rotationY(0.5), scaling(0.2, 0.2, 0.2)));
+    backWall.material.pattern.setTransform(multiply(rotationY(0.5), scaling(0.4, 0.4, 0.2)));
 
     /*
     const rightWall = Sphere();
@@ -105,10 +105,11 @@ class Animation extends React.Component {
     middle.material.color = Color(0.1, 1, 0.5);
     middle.material.diffuse = 0.7;
     middle.material.specular = 0.3;
-    middle.material.pattern = new Perturbed(new Checkers(new SolidPattern(Color(0, 1, 0.2)), new SolidPattern(Color(0, 1, 1))));
-    middle.material.pattern.setTransform(
-      multiply(rotationZ(0.5), scaling(0.1, 0.1, 0.2))
+    const mpattern = new Checkers(new SolidPattern(Color(0, 1, 0.2)), new SolidPattern(Color(0, 0.1, 1)));
+    mpattern.setTransform(
+      multiply(rotationZ(0.5), scaling(0.4, 0.4, 0.4))
     );
+    middle.material.pattern = mpattern; //new Perturbed(mpattern);
 
     const right = new Sphere();
     right.setTransform(
@@ -117,13 +118,14 @@ class Animation extends React.Component {
     right.material.color = Color(0.5, 1, 0.1);
     right.material.diffuse = 0.7;
     right.material.specular = 0.3;
-    right.material.pattern = new RadialGradient(
+    const rpattern = new RadialGradient(
       new SolidPattern(Color.White),
       new SolidPattern(Color(0, 0.2, 0.5))
     );
-    right.material.pattern.setTransform(
+    rpattern.setTransform(
       multiply(rotationZ(0.5), scaling(0.1, 0.1, 0.2))
     );
+    right.material.pattern = new Perturbed(rpattern);
 
     const left = new Sphere();
     left.setTransform(

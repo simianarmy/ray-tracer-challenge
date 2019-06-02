@@ -1,6 +1,6 @@
 import { Matrix, multiplyTuple, inverse } from "./matrix";
 import { Color } from "./color";
-import { sub, add, divide, multiply, magnitude } from "./tuple";
+import { point, sub, add, divide, multiply, magnitude } from "./tuple";
 import { perlin } from "./math";
 
 class Pattern {
@@ -206,17 +206,17 @@ class Perturbed extends Pattern {
   constructor(p) {
     super();
     this.p1 = p;
-    this.scaleFactor = 1;
+    this.scaleFactor = 4;
   }
 
   patternAt(p) {
     const pp = this.getPatternPoint(p);
-    const c = this.p1.patternAt(pp);
-    const noiseX = c.x + perlin(c.x, c.y, c.z) * this.scaleFactor;
-    const noiseY = c.y + perlin(c.x, c.y, c.z + 1) * this.scaleFactor;
-    const noiseZ = c.z + perlin(c.x, c.y, c.z + 2) * this.scaleFactor;
-    console.log("perturbed ", c, noiseX, noiseY, noiseZ);
-    return Color(noiseX, noiseY, noiseZ);
+    const noiseX = perlin(pp.x, pp.y + 0.1, pp.z + .1) * this.scaleFactor;
+    const noiseY = perlin(pp.x, pp.y + 0.2, pp.z + 1.1) * this.scaleFactor;
+    const noiseZ = perlin(pp.x, pp.y + 0.3, pp.z + 2.1) * this.scaleFactor;
+
+    //console.log("perturbed ", pp, noiseX, noiseY, noiseZ);
+    return this.p1.patternAt(point(pp.x + noiseX, pp.y + noiseY, pp.z + noiseZ));
   }
 }
 
