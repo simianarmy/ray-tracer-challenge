@@ -74,7 +74,7 @@ class Animation extends React.Component {
     const floor = new Plane();
     floor.material.color = Color(1, 0.9, 0.9);
     floor.material.specular = 0;
-    floor.material.pattern = new Blended(stripe1, stripe2);
+    floor.material.pattern = new Perturbed(new Blended(stripe1, stripe2));
     //
     const backWall = new Plane();
     backWall.setTransform(
