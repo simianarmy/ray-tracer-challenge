@@ -1,4 +1,12 @@
-import { World, colorAt, intersectWorld, shadeHit, isShadowed, reflectedColor } from "./world";
+import {
+  World,
+  colorAt,
+  intersectWorld,
+  shadeHit,
+  isShadowed,
+  reflectedColor,
+  refractedColor
+} from "./world";
 import { point, vector } from "./tuple";
 import { PointLight } from "./light";
 import { Color } from "./color";
@@ -6,7 +14,12 @@ import { Sphere } from "./sphere";
 import { Ray } from "./ray";
 import { Plane } from "./plane";
 import { scaling, translation } from "./transformations";
-import { Intersection, prepareComputations } from "./intersection";
+import { testPattern } from "./pattern";
+import {
+  Intersection,
+  intersections,
+  prepareComputations
+} from "./intersection";
 
 describe("World", () => {
   it("constructor with no arguments yields no objects or lights", () => {
@@ -122,11 +135,36 @@ describe("World", () => {
       shape.material.reflective = 0.5;
       shape.setTransform(translation(0, -1, 0));
       w.objects.push(shape);
-      const r = Ray(point(0, 0, -3), vector(0, -Math.sqrt(2) / 2, Math.sqrt(2) / 2));
+      const r = Ray(
+        point(0, 0, -3),
+        vector(0, -Math.sqrt(2) / 2, Math.sqrt(2) / 2)
+      );
       const is = Intersection(Math.sqrt(2), shape);
       const comps = prepareComputations(is, r);
       const color = shadeHit(w, comps);
       expect(color).toEqualColor(Color(0.87675, 0.92434, 0.82917));
+    });
+
+    it("should handle transparent material", () => {
+      const w = World.Default();
+      const floor = new Plane();
+      floor.setTransform(translation(0, -1, 0));
+      floor.material.transparency = 0.5;
+      floor.material.refractiveIndex = 1.5;
+      w.objects.push(floor);
+      const ball = new Sphere();
+      ball.material.color = Color(1, 0, 0);
+      ball.material.ambient = 0.5;
+      ball.setTransform(translation(0, -3.5, -0.5));
+      w.objects.push(ball);
+      const r = Ray(
+        point(0, 0, -3),
+        vector(0, -Math.sqrt(2) / 2, Math.sqrt(2) / 2)
+      );
+      const xs = intersections({ t: Math.sqrt(2), object: floor });
+      const comps = prepareComputations(xs[0], r, xs);
+      const color = shadeHit(w, comps, 5);
+      expect(color).toEqualColor(Color(0.93642, 0.68642, 0.68642));
     });
   });
 
@@ -221,7 +259,10 @@ describe("World", () => {
       shape.material.reflective = 0.5;
       shape.setTransform(translation(0, -1, 0));
       w.objects.push(shape);
-      const r = Ray(point(0, 0, -3), vector(0, -Math.sqrt(2) / 2, Math.sqrt(2) / 2));
+      const r = Ray(
+        point(0, 0, -3),
+        vector(0, -Math.sqrt(2) / 2, Math.sqrt(2) / 2)
+      );
       const is = Intersection(Math.sqrt(2), shape);
       const comps = prepareComputations(is, r);
       const color = reflectedColor(w, comps);
@@ -235,12 +276,80 @@ describe("World", () => {
         shape.material.reflective = 0.5;
         shape.setTransform(translation(0, -1, 0));
         w.objects.push(shape);
-        const r = Ray(point(0, 0, -3), vector(0, -Math.sqrt(2) / 2, Math.sqrt(2) / 2));
+        const r = Ray(
+          point(0, 0, -3),
+          vector(0, -Math.sqrt(2) / 2, Math.sqrt(2) / 2)
+        );
         const is = Intersection(Math.sqrt(2), shape);
         const comps = prepareComputations(is, r);
         const color = reflectedColor(w, comps, 0);
         expect(color).toEqualColor(Color.Black);
       });
+    });
+  });
+
+  describe("refractedColor", () => {
+    it("should calculate color of an opaque surface", () => {
+      const w = World.Default();
+      const shape = w.objects[0];
+      const r = Ray(point(0, 0, -5), vector(0, 0, 1));
+      const xs = intersections(
+        { t: 4, object: shape },
+        { t: 6, object: shape }
+      );
+      const comps = prepareComputations(xs[0], r, xs);
+      const color = refractedColor(w, comps, 5);
+      expect(color).toEqualColor(Color.Black);
+    });
+
+    it("should return black at maximum recursive depth", () => {
+      const w = World.Default();
+      const shape = w.objects[0];
+      shape.material.transparency = 1.0;
+      shape.material.refractiveIndex = 1.5;
+      const r = Ray(point(0, 0, -5), vector(0, 0, 1));
+      const xs = intersections(
+        { t: 4, object: shape },
+        { t: 6, object: shape }
+      );
+      const comps = prepareComputations(xs[0], r, xs);
+      const color = refractedColor(w, comps, 0);
+      expect(color).toEqualColor(Color.Black);
+    });
+
+    it("should return black at total internal reflection", () => {
+      const w = World.Default();
+      const shape = w.objects[0];
+      shape.material.transparency = 1.0;
+      shape.material.refractiveIndex = 1.5;
+      const r = Ray(point(0, 0, Math.sqrt(2) / 2), vector(0, 1, 0));
+      const xs = intersections(
+        { t: -Math.sqrt(2) / 2, object: shape },
+        { t: Math.sqrt(2) / 2, object: shape }
+      );
+      const comps = prepareComputations(xs[1], r, xs);
+      const color = refractedColor(w, comps, 5);
+      expect(color).toEqualColor(Color.Black);
+    });
+
+    it("should return the refrated color from a refracted ray", () => {
+      const w = World.Default();
+      const A = w.objects[0];
+      A.material.ambient = 1.0;
+      A.material.pattern = testPattern();
+      const B = w.objects[1];
+      B.material.transparency = 1.0;
+      B.material.refractiveIndex = 1.5;
+      const r = Ray(point(0, 0, 0.1), vector(0, 1, 0));
+      const xs = intersections(
+        { t: -0.9899, object: A },
+        { t: -0.4899, object: B },
+        { t: 0.4899, object: B },
+        { t: 0.9899, object: A }
+      );
+      const comps = prepareComputations(xs[2], r, xs);
+      const c = refractedColor(w, comps, 5);
+      expect(c).toEqualColor(Color(0, 0.99887, 0.047218));
     });
   });
 });
