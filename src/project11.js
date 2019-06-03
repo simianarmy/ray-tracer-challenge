@@ -33,7 +33,7 @@ import "./App.css";
 const ProjectTitle = "Project 11";
 const HSIZE = 100;
 const VSIZE = 50;
-const RESOLUTION = 3;
+const RESOLUTION = 2;
 const CANVAS_SCALE = 2;
 
 class Animation extends React.Component {
@@ -78,37 +78,29 @@ class Animation extends React.Component {
   constructor(props) {
     super(props);
 
-    let stripe1 = new Stripe(
-      new SolidPattern(Color(0.2, 0.4, 0.5)),
-      new SolidPattern(Color(1, 1, 1))
+    const fpattern = new Checkers(
+      new SolidPattern(Color(1, 1, 1)),
+      new SolidPattern(Color(0, 0, 0))
     );
-    stripe1.setTransform(multiply(rotationY(0.5), scaling(0.2, 0.2, 0.2)));
-    const stripe2 = new Stripe(
-      new SolidPattern(Color(0, 0.5, 0.8)),
-      new SolidPattern(Color(1, 0, 0.2))
-    );
-    stripe2.setTransform(multiply(rotationY(-0.5), scaling(0.1, 0.1, 0.1)));
+    fpattern.setTransform(multiply(rotationZ(0.5), scaling(0.4, 0.4, 0.4)));
 
     const floor = new Plane();
     floor.material.color = Color(1, 0.9, 0.9);
-    floor.material.specular = 0;
-    floor.material.reflective = 0.9;
-    floor.material.transparency = 0.4;
-    floor.material.refractiveIndex = 2;
-    //floor.material.pattern = new Perturbed(new Blended(stripe1, stripe2));
+    floor.material.ambient = 0.5;
+    floor.material.pattern = fpattern;
 
     const middle = new Sphere();
     middle.setTransform(translation(-0.5, 1, 0.5));
     middle.material.color = Color(0.1, 1, 0.5);
+    middle.material.ambient = 0.5;
     middle.material.diffuse = 0.7;
     middle.material.specular = 0.3;
-    middle.material.transparency = 0.7;
+    middle.material.transparency = 0.5;
     middle.material.refractiveIndex = 1.5;
     const mpattern = new Checkers(
       new SolidPattern(Color(0, 1, 0.2)),
       new SolidPattern(Color(0, 0.1, 1))
     );
-    mpattern.setTransform(multiply(rotationZ(0.5), scaling(0.4, 0.4, 0.4)));
     //middle.material.pattern = mpattern; //new Perturbed(mpattern);
 
     const right = new Sphere();
@@ -116,6 +108,7 @@ class Animation extends React.Component {
       multiply(translation(1.5, 0.5, -0.5), scaling(0.5, 0.5, 0.5))
     );
     right.material.color = Color(0.5, 1, 0.1);
+    right.material.ambient = 0.5;
     right.material.diffuse = 0.3;
     right.material.specular = 0.7;
     right.material.reflective = 0.8;
@@ -128,7 +121,7 @@ class Animation extends React.Component {
 
     const left = new Sphere();
     left.setTransform(
-      multiply(translation(-1.5, 0.33, -0.75), scaling(0.33, 0.33, 0.33))
+      multiply(translation(-1.5, 0.33, -0.75), scaling(0.6, 0.6, 0.6))
     );
     left.material.color = Color(1, 0.8, 0.1);
     left.material.diffuse = 0.1;
