@@ -3,7 +3,7 @@ import { Sphere } from "./sphere";
 import { Plane } from "./plane";
 import { Ray } from "./ray";
 import { point, vector } from "./tuple";
-import { translation } from "./transformations";
+import { scaling, translation } from "./transformations";
 
 describe("Intersection", () => {
   it("should encapsulate t and an object", () => {
@@ -116,6 +116,37 @@ describe("hit", () => {
       const is = Intersection(Math.sqrt(2), plane);
       const comps = prepareComputations(is, r);
       expect(comps.reflectv).toEqualVector(vector(0, angle, angle));
+    });
+
+    it("should calculate n1 and n2 for transparent objects", () => {
+      const A = Sphere.Glass();
+      A.setTransform(scaling(2, 2, 2));
+
+      const B = Sphere.Glass();
+      B.setTransform(translation(0, 0, -.25));
+      B.material.refractiveIndex = 2;
+
+      const C = Sphere.Glass();
+      C.setTransform(translation(0, 0, .25));
+      C.material.refractiveIndex = 2.5;
+
+      const r = Ray(point(0, 0, -4), vector(0, 0, 1));
+      const xs = intersections(
+        {t: 2, object: A},
+        {t: 2.75, object: B},
+        {t: 3.25, object: C},
+        {t: 4.75, object: B},
+        {t: 5.25, object: C},
+        {t: 6, object: A}
+      );
+      const expects = [[1.0, 1.5], [1.5, 2.0], [2.0, 2.5], [2.5, 2.5], [2.5, 1.5], [1.5, 1.0]];
+      expects.forEach((ex, i) => {
+        //console.log("===> testing index", i, xs[i].t, ex);
+        const comps = prepareComputations(xs[i], r, xs);
+        //console.log("comps", comps.n1, comps.n2);
+        expect(comps.n1).toEqual(ex[0]);
+        expect(comps.n2).toEqual(ex[1]);
+      });
     });
   });
 });

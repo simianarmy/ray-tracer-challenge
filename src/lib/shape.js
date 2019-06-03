@@ -3,6 +3,7 @@ import { Material } from "./material";
 import { transform } from "./ray";
 import { normalize, vector } from "./tuple";
 
+const uuidv1 = require("uuid/v1");
 
 class Shape {
   constructor(props) {
@@ -12,6 +13,7 @@ class Shape {
       });
     this.transformation = props.transformation;
     this.material = props.material;
+    this.id = uuidv1();
   }
 
   getTransform() {

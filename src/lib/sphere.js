@@ -2,14 +2,8 @@ import { dot, point, sub } from "./tuple";
 import { Shape } from "./shape";
 import { Intersection } from "./intersection";
 
-const uuidv1 = require("uuid/v1");
 
 class Sphere extends Shape {
-  constructor(props) {
-    super(props);
-    this.id = uuidv1();
-  }
-
   /**
    * Calculates intersections of a sphere with a ray
    * @param {Ray} r
@@ -36,6 +30,17 @@ class Sphere extends Shape {
     return sub(p, point(0, 0, 0));
   }
 }
+
+/**
+ * Glass sphere constructor
+ */
+Sphere.Glass = () => {
+  let s = new Sphere();
+  s.material.transparency = 1;
+  s.material.refractiveIndex = 1.5;
+
+  return s;
+};
 
 export { Sphere };
 

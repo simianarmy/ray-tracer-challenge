@@ -42,9 +42,10 @@ export const hit = xs => {
 /**
  * @param {Intersection} is
  * @param {Ray} ray
+ * @param {Array[Intersection]} xs
  * @returns {Object}
  */
-export const prepareComputations = (is, ray) => {
+export const prepareComputations = (is, ray, xs = [is]) => {
   const point = position(ray, is.t);
 
   let comps = {
@@ -68,6 +69,43 @@ export const prepareComputations = (is, ray) => {
 
   // compute reflection vector
   comps.reflectv = reflect(ray.direction, comps.normalv);
+
+  // compute refractive indicdes
+  let containers = [], n1 = null, n2 = null;
+
+  for (let i=0; i<xs.length; i++) {
+    const intersection = xs[i];
+    const equalsHit = intersection == is;
+
+    // if intersection is the hit
+    if (equalsHit) {
+      if (!containers.length) {
+        n1 = 1.0;
+      } else {
+        n1 = containers[containers.length - 1].material.refractiveIndex;
+      }
+    }
+
+    if (containers.find(c => c.id === intersection.object.id)) {
+      // remove object from containers
+      containers = containers.filter(c => c.id !== intersection.object.id);
+    } else {
+      containers.push(intersection.object);
+    }
+
+    if (equalsHit) {
+      if (!containers.length) {
+        n2 = 1.0;
+      } else {
+        n2 = containers[containers.length - 1].material.refractiveIndex;
+      }
+
+      break;
+    }
+  };
+
+  comps.n1 = n1;
+  comps.n2 = n2;
 
   return comps;
 }

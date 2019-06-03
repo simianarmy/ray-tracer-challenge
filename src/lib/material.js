@@ -12,6 +12,8 @@ const DEFAULT_DIFFUSE = 0.9;
 const DEFAULT_SPECULAR = 0.9;
 const DEFAULT_SHININESS = 200;
 const DEFAULT_REFLECTIVE = 0.0;
+const DEFAULT_TRANSPARENCY = 0.0;
+const DEFAULT_REFRACTIVE_INDEX = 1.0;
 
 export const Material = () => {
   return {
@@ -21,6 +23,8 @@ export const Material = () => {
     specular: DEFAULT_SPECULAR,
     shininess: DEFAULT_SHININESS,
     reflective: DEFAULT_REFLECTIVE,
+    transparency: DEFAULT_TRANSPARENCY,
+    refractiveIndex: DEFAULT_REFRACTIVE_INDEX,
     pattern: null
   };
 };

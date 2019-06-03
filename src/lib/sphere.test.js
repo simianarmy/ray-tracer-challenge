@@ -54,4 +54,13 @@ describe("Sphere", () => {
       expect(n).toEqualTuple(normalize(vector(val, val, val)));
     });
   });
+
+  describe("GlassSphere", () => {
+    it("should return sphere with glassy properties", () => {
+      const s = Sphere.Glass();
+      expect(s.getTransform()).toEqualMatrix(Matrix.identity);
+      expect(s.material.transparency).toEqual(1.0);
+      expect(s.material.refractiveIndex).toEqual(1.5);
+    });
+  });
 });

@@ -85,7 +85,7 @@ export const colorAt = (world, ray, remaining = MAX_RECURSION_DEPTH) => {
     return Color.Black;
   }
 
-  const comps = prepareComputations(is, ray);
+  const comps = prepareComputations(is, ray, xs);
 
   return shadeHit(world, comps, remaining);
 };
