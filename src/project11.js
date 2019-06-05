@@ -31,8 +31,8 @@ import "./App.css";
 
 // Control resolution = render time
 const ProjectTitle = "Project 11";
-const HSIZE = 100;
-const VSIZE = 50;
+const HSIZE = 200;
+const VSIZE = 100;
 const RESOLUTION = 2;
 const CANVAS_SCALE = 2;
 
@@ -78,40 +78,50 @@ class Animation extends React.Component {
   constructor(props) {
     super(props);
 
-    const fpattern = new Checkers(
-      new SolidPattern(Color(1, 1, 1)),
-      new SolidPattern(Color(0, 0, 0))
-    );
-    fpattern.setTransform(multiply(rotationZ(0.5), scaling(0.4, 0.4, 0.4)));
+    //const fpattern = new Checkers(
+      //new SolidPattern(Color(1, 1, 1)),
+      //new SolidPattern(Color(0, 0, 0))
+    //);
+    const fpattern = new SolidPattern(Color(0.2, 0.2, 0.1));
+    fpattern.setTransform(multiply(rotationZ(0.5), scaling(0.9, 0.9, 0.9)));
 
     const floor = new Plane();
-    floor.material.color = Color(1, 0.9, 0.9);
-    floor.material.ambient = 0.5;
+    floor.material.color = Color(1, 0.8, 0.8);
+    floor.material.ambient = 0.2;
+    floor.material.diffuse = 0.7;
+    floor.material.reflective = 0.7;
     floor.material.pattern = fpattern;
 
-    const middle = new Sphere();
+    const backWall = new Plane();
+    backWall.setTransform(
+      multiply(translation(0, 0, 10), rotationX(Math.PI / 2))
+    );
+    backWall.material.pattern = new Ring(new SolidPattern(Color(0.2, 0, 0.2)), new SolidPattern(Color(1, 1, 0.5)));
+    backWall.material.pattern.setTransform(multiply(rotationY(0.5), scaling(0.4, 0.4, 0.2)));
+
+    const middle = Sphere.Glass();
     middle.setTransform(translation(-0.5, 1, 0.5));
-    middle.material.color = Color(0.1, 1, 0.5);
-    middle.material.ambient = 0.5;
-    middle.material.diffuse = 0.7;
-    middle.material.specular = 0.3;
-    middle.material.transparency = 0.5;
-    middle.material.refractiveIndex = 1.5;
+    middle.material.color = Color(0.8, .4, 0.5);
+    middle.material.ambient = 0.1;
+    middle.material.diffuse = 0.2;
+    middle.material.specular = 1.0;
+    middle.material.shininess = 300;
+    middle.material.transparency = 0.7;
+    middle.material.reflective = 0.9;
     const mpattern = new Checkers(
       new SolidPattern(Color(0, 1, 0.2)),
       new SolidPattern(Color(0, 0.1, 1))
     );
     //middle.material.pattern = mpattern; //new Perturbed(mpattern);
 
-    const right = new Sphere();
+    const right = Sphere.Glass();
     right.setTransform(
-      multiply(translation(1.5, 0.5, -0.5), scaling(0.5, 0.5, 0.5))
+      multiply(translation(1.5, 0.5, -0.5), scaling(0.6, 0.6, 0.6))
     );
-    right.material.color = Color(0.5, 1, 0.1);
-    right.material.ambient = 0.5;
+    right.material.color = Color(0.2, 0.2, 0.6);
+    right.material.ambient = 0.1;
     right.material.diffuse = 0.3;
-    right.material.specular = 0.7;
-    right.material.reflective = 0.8;
+    right.material.specular = 1.0;
     const rpattern = new RadialGradient(
       new SolidPattern(Color.White),
       new SolidPattern(Color(0, 0.2, 0.5))
@@ -119,21 +129,23 @@ class Animation extends React.Component {
     rpattern.setTransform(multiply(rotationZ(0.5), scaling(0.1, 0.1, 0.2)));
     //right.material.pattern = new Perturbed(rpattern);
 
-    const left = new Sphere();
+    const left = Sphere.Glass();
     left.setTransform(
-      multiply(translation(-1.5, 0.33, -0.75), scaling(0.6, 0.6, 0.6))
+      multiply(translation(-1.5, .63, -0.75), scaling(0.6, 0.6, 0.6))
     );
-    left.material.color = Color(1, 0.8, 0.1);
+    left.material.color = Color(0.4, 0.8, 0.1);
     left.material.diffuse = 0.1;
-    left.material.specular = 0.1;
-    left.material.ambient = 0.8;
-    left.material.pattern = new Gradient(
-      new SolidPattern(Color(0.2, 0.4, 1)),
-      new SolidPattern(Color(1, 0, 0))
-    );
+    left.material.ambient = 0.1;
+    left.material.reflective = 0.4;
+    middle.material.specular = 1.0;
+    middle.material.shininess = 300;
+    //left.material.pattern = new Stripe(
+      //new SolidPattern(Color(0.2, 0.4, 1)),
+      //new SolidPattern(Color(1, 0, 0))
+    //);
 
     const world = World();
-    world.objects = [floor, middle, right, left];
+    world.objects = [floor, backWall, middle, right, left];
     world.lightSource = PointLight(point(-10, 10, -10), Color(1, 1, 1));
 
     const camera = Camera(HSIZE * RESOLUTION, VSIZE * RESOLUTION, Math.PI / 3);
