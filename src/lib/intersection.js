@@ -70,12 +70,12 @@ export const prepareComputations = (is, ray, xs = [is]) => {
   // compute reflection vector
   comps.reflectv = reflect(ray.direction, comps.normalv);
 
-  // compute refractive indicdes
+  // compute refractive indices
   let containers = [], n1 = null, n2 = null;
 
   for (let i=0; i<xs.length; i++) {
     const intersection = xs[i];
-    const equalsHit = intersection == is;
+    const equalsHit = intersection.t === is.t && intersection.object.id === is.object.id;
 
     // if intersection is the hit
     if (equalsHit) {
