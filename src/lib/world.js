@@ -1,4 +1,4 @@
-import { point, add, sub, magnitude, normalize, multiply } from "./tuple";
+import { point, add, dot, sub, magnitude, normalize, multiply } from "./tuple";
 import { PointLight } from "./light";
 import { Color } from "./color";
 import { Sphere } from "./sphere";
@@ -70,8 +70,9 @@ export const shadeHit = (world, comps, remaining = MAX_RECURSION_DEPTH) => {
     shadowed
   );
   const reflected = reflectedColor(world, comps, remaining);
+  const refracted = refractedColor(world, comps, remaining);
 
-  return Color.fromPoint(add(surface, reflected));
+  return Color.fromPoint(add(add(surface, reflected), refracted));
 };
 
 /**
@@ -118,4 +119,47 @@ export const reflectedColor = (world, comps, remaining) => {
 
     return Color.fromPoint(multiply(color, comps.object.material.reflective));
   }
+};
+
+/**
+ * @returns {Color}
+ */
+export const refractedColor = (world, comps, remaining) => {
+  if (comps.object.material.transparency === 0 || remaining < 1) {
+    return Color.Black;
+  }
+
+  // Use Snell's Law
+
+  // Find the ratio of 1st index of refraction to the 2nd
+  const nRatio = comps.n1 / comps.n2;
+
+  // cos(theta_i) is same as dot product of the two vectors
+  const cosI = dot(comps.eyev, comps.normalv);
+
+  // Find sin(theta_t)^2 via trig. identity
+  const sin2T = nRatio * nRatio * (1 - cosI * cosI);
+
+  if (sin2T > 1) {
+    // total internal refraction
+    return Color.Black;
+  }
+
+  // Find cos(theta_t) via tri. identity
+  const cosT = Math.sqrt(1.0 - sin2T);
+
+  // Compute direction of refracted ray
+  const direction = sub(
+    multiply(comps.normalv, nRatio * cosI - cosT),
+    multiply(comps.eyev, nRatio)
+  );
+
+  // Create the refracted ray
+  const refractRay = Ray(comps.underPoint, direction);
+
+  // Find the color of the refracted ray, making sure to multiply by the transparency value to account for any opacity
+  return multiply(
+    colorAt(world, refractRay, remaining - 1),
+    comps.object.material.transparency
+  );
 };

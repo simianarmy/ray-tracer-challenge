@@ -54,7 +54,19 @@ class Animation extends React.Component {
     let tmpCanvas = document.querySelector("#tempCanvas");
     tmpCanvas.width = imageData.width * CANVAS_SCALE;
     tmpCanvas.height = imageData.height * CANVAS_SCALE;
-    tmpCanvas.getContext("2d").drawImage(previewCanvas, 0, 0, imageData.width, imageData.height, 0, 0, imageData.width * CANVAS_SCALE, imageData.height * CANVAS_SCALE);
+    tmpCanvas
+      .getContext("2d")
+      .drawImage(
+        previewCanvas,
+        0,
+        0,
+        imageData.width,
+        imageData.height,
+        0,
+        0,
+        imageData.width * CANVAS_SCALE,
+        imageData.height * CANVAS_SCALE
+      );
 
     this.setState({
       ready: true,
@@ -66,26 +78,28 @@ class Animation extends React.Component {
   constructor(props) {
     super(props);
 
-    let stripe1 = new Stripe(new SolidPattern(Color(0.2, 0.4, 0.5)), new SolidPattern(Color(1, 1, 1)));
-    stripe1.setTransform(multiply(rotationY(0.5), scaling(0.2, 0.2, 0.2)));
-    const stripe2 = new Stripe(new SolidPattern(Color(0, 0.5, 0.8)), new SolidPattern(Color(1, 0, 0.2)));
-    stripe2.setTransform(multiply(rotationY(-0.5), scaling(0.1, 0.1, 0.1)));
+    const fpattern = new Checkers(
+      new SolidPattern(Color(1, 1, 1)),
+      new SolidPattern(Color(0, 0, 0))
+    );
+    fpattern.setTransform(multiply(rotationZ(0.5), scaling(0.4, 0.4, 0.4)));
 
     const floor = new Plane();
     floor.material.color = Color(1, 0.9, 0.9);
-    floor.material.specular = 0;
-    floor.material.reflective = 0.9;
-    //floor.material.pattern = new Perturbed(new Blended(stripe1, stripe2));
+    floor.material.ambient = 0.5;
+    floor.material.pattern = fpattern;
 
     const middle = new Sphere();
     middle.setTransform(translation(-0.5, 1, 0.5));
     middle.material.color = Color(0.1, 1, 0.5);
+    middle.material.ambient = 0.5;
     middle.material.diffuse = 0.7;
     middle.material.specular = 0.3;
-    middle.material.reflective = 0.5;
-    const mpattern = new Checkers(new SolidPattern(Color(0, 1, 0.2)), new SolidPattern(Color(0, 0.1, 1)));
-    mpattern.setTransform(
-      multiply(rotationZ(0.5), scaling(0.4, 0.4, 0.4))
+    middle.material.transparency = 0.5;
+    middle.material.refractiveIndex = 1.5;
+    const mpattern = new Checkers(
+      new SolidPattern(Color(0, 1, 0.2)),
+      new SolidPattern(Color(0, 0.1, 1))
     );
     //middle.material.pattern = mpattern; //new Perturbed(mpattern);
 
@@ -94,6 +108,7 @@ class Animation extends React.Component {
       multiply(translation(1.5, 0.5, -0.5), scaling(0.5, 0.5, 0.5))
     );
     right.material.color = Color(0.5, 1, 0.1);
+    right.material.ambient = 0.5;
     right.material.diffuse = 0.3;
     right.material.specular = 0.7;
     right.material.reflective = 0.8;
@@ -101,21 +116,21 @@ class Animation extends React.Component {
       new SolidPattern(Color.White),
       new SolidPattern(Color(0, 0.2, 0.5))
     );
-    rpattern.setTransform(
-      multiply(rotationZ(0.5), scaling(0.1, 0.1, 0.2))
-    );
+    rpattern.setTransform(multiply(rotationZ(0.5), scaling(0.1, 0.1, 0.2)));
     //right.material.pattern = new Perturbed(rpattern);
 
     const left = new Sphere();
     left.setTransform(
-      multiply(translation(-1.5, 0.33, -0.75), scaling(0.33, 0.33, 0.33))
+      multiply(translation(-1.5, 0.33, -0.75), scaling(0.6, 0.6, 0.6))
     );
     left.material.color = Color(1, 0.8, 0.1);
     left.material.diffuse = 0.1;
     left.material.specular = 0.1;
     left.material.ambient = 0.8;
-    left.material.reflective = 0.4;
-    left.material.pattern = new Gradient(new SolidPattern(Color(0.2, 0.4, 1)), new SolidPattern(Color(1, 0, 0)));
+    left.material.pattern = new Gradient(
+      new SolidPattern(Color(0.2, 0.4, 1)),
+      new SolidPattern(Color(1, 0, 0))
+    );
 
     const world = World();
     world.objects = [floor, middle, right, left];
@@ -148,21 +163,26 @@ class Animation extends React.Component {
 
     return (
       <>
-      {ready || (
-        <>
-        <h1>Generating...</h1>
-        <canvas id="ppmPreview" width={camera.hsize} height={camera.vsize} style={{marginTop: "32px"}}/>
-        </>
-      )}
-      <canvas id="tempCanvas" />
-      {ready && (
-        <>
-        <FileDownloadButton
-        fileBlob={this.state.imgBlob}
-        fileName={this.state.imgFileName}
-        />
-        </>
-      )}
+        {ready || (
+          <>
+            <h1>Generating...</h1>
+            <canvas
+              id="ppmPreview"
+              width={camera.hsize}
+              height={camera.vsize}
+              style={{ marginTop: "32px" }}
+            />
+          </>
+        )}
+        <canvas id="tempCanvas" />
+        {ready && (
+          <>
+            <FileDownloadButton
+              fileBlob={this.state.imgBlob}
+              fileName={this.state.imgFileName}
+            />
+          </>
+        )}
       </>
     );
   }

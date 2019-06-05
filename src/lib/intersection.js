@@ -1,5 +1,5 @@
 import { position } from "./ray";
-import { add, dot, negate, multiply, reflect } from "./tuple";
+import { add, dot, negate, multiply, reflect, sub } from "./tuple";
 import { EPSILON } from "./math";
 
 /**
@@ -11,7 +11,7 @@ export const Intersection = (t, object) => {
   return {
     t,
     object
-  }
+  };
 };
 
 /**
@@ -53,7 +53,7 @@ export const prepareComputations = (is, ray, xs = [is]) => {
     object: is.object,
     point,
     eyev: negate(ray.direction),
-    normalv: is.object.normalAt(point),
+    normalv: is.object.normalAt(point)
   };
 
   if (dot(comps.normalv, comps.eyev) < 0) {
@@ -63,17 +63,24 @@ export const prepareComputations = (is, ray, xs = [is]) => {
     comps.inside = false;
   }
 
+  const fraction = multiply(comps.normalv, EPSILON);
+
   // prevent acne by placing intersection point slightly 'above' point in
   // direction of normalv
-  comps.overPoint = add(comps.point, multiply(comps.normalv, EPSILON));
+  comps.overPoint = add(comps.point, fraction);
+
+  // compute underPoint to describe where refracted rays will originate
+  comps.underPoint = sub(comps.point, fraction);
 
   // compute reflection vector
   comps.reflectv = reflect(ray.direction, comps.normalv);
 
-  // compute refractive indices
-  let containers = [], n1 = null, n2 = null;
+  // compute refractive indicdes
+  let containers = [],
+    n1 = null,
+    n2 = null;
 
-  for (let i=0; i<xs.length; i++) {
+  for (let i = 0; i < xs.length; i++) {
     const intersection = xs[i];
     const equalsHit = intersection.t === is.t && intersection.object.id === is.object.id;
 
@@ -102,10 +109,10 @@ export const prepareComputations = (is, ray, xs = [is]) => {
 
       break;
     }
-  };
+  }
 
   comps.n1 = n1;
   comps.n2 = n2;
 
   return comps;
-}
+};

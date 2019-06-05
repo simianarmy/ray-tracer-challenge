@@ -1,9 +1,15 @@
-import { Intersection, intersections, hit, prepareComputations } from "./intersection";
+import {
+  Intersection,
+  intersections,
+  hit,
+  prepareComputations
+} from "./intersection";
 import { Sphere } from "./sphere";
 import { Plane } from "./plane";
 import { Ray } from "./ray";
 import { point, vector } from "./tuple";
 import { scaling, translation } from "./transformations";
+import { EPSILON } from "./math";
 
 describe("Intersection", () => {
   it("should encapsulate t and an object", () => {
@@ -58,13 +64,13 @@ describe("hit", () => {
   });
 
   it("is always the lowest nonnegative intersection", () => {
-      const s = new Sphere();
-      const i1 = Intersection(5, s);
-      const i2 = Intersection(7, s);
-      const i3 = Intersection(-3, s);
-      const i4 = Intersection(2, s);
-      const xs = intersections(i1, i2, i3, i4);
-      expect(hit(xs)).toEqual(i4);
+    const s = new Sphere();
+    const i1 = Intersection(5, s);
+    const i2 = Intersection(7, s);
+    const i3 = Intersection(-3, s);
+    const i4 = Intersection(2, s);
+    const xs = intersections(i1, i2, i3, i4);
+    expect(hit(xs)).toEqual(i4);
   });
 
   describe("precomputing the state of", () => {
@@ -123,23 +129,29 @@ describe("hit", () => {
       A.setTransform(scaling(2, 2, 2));
 
       const B = Sphere.Glass();
-      B.setTransform(translation(0, 0, -.25));
+      B.setTransform(translation(0, 0, -0.25));
       B.material.refractiveIndex = 2;
 
       const C = Sphere.Glass();
-      C.setTransform(translation(0, 0, .25));
+      C.setTransform(translation(0, 0, 0.25));
       C.material.refractiveIndex = 2.5;
-
       const r = Ray(point(0, 0, -4), vector(0, 0, 1));
       const xs = intersections(
-        {t: 2, object: A},
-        {t: 2.75, object: B},
-        {t: 3.25, object: C},
-        {t: 4.75, object: B},
-        {t: 5.25, object: C},
-        {t: 6, object: A}
+        { t: 2, object: A },
+        { t: 2.75, object: B },
+        { t: 3.25, object: C },
+        { t: 4.75, object: B },
+        { t: 5.25, object: C },
+        { t: 6, object: A }
       );
-      const expects = [[1.0, 1.5], [1.5, 2.0], [2.0, 2.5], [2.5, 2.5], [2.5, 1.5], [1.5, 1.0]];
+      const expects = [
+        [1.0, 1.5],
+        [1.5, 2.0],
+        [2.0, 2.5],
+        [2.5, 2.5],
+        [2.5, 1.5],
+        [1.5, 1.0]
+      ];
       expects.forEach((ex, i) => {
         //console.log("===> testing index", i, xs[i].t, ex);
         const comps = prepareComputations(xs[i], r, xs);
@@ -147,6 +159,17 @@ describe("hit", () => {
         expect(comps.n1).toEqual(ex[0]);
         expect(comps.n2).toEqual(ex[1]);
       });
+    });
+
+    it("should set under point offset below the surface", () => {
+      const r = Ray(point(0, 0, -5), vector(0, 0, 1));
+      const shape = Sphere.Glass();
+      shape.setTransform(translation(0, 0, 1));
+      const is = Intersection(5, shape);
+      const xs = intersections(is);
+      const comps = prepareComputations(is, r, xs);
+      expect(comps.underPoint.z).toBeGreaterThan(EPSILON / 2);
+      expect(comps.point.z).toBeLessThan(comps.underPoint.z);
     });
   });
 });
