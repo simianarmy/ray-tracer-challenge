@@ -7,6 +7,7 @@ import Project8 from "./project8";
 import Project9 from "./project9";
 import Project10 from "./project10";
 import Project11 from "./project11";
+import Project12 from "./project12";
 import "./App.css";
 
 const projects = [
@@ -21,9 +22,10 @@ const projects = [
   Project8,
   Project9,
   Project10,
-  Project11
+  Project11,
+  Project12
 ];
-const ProjectNum = 11;
+const ProjectNum = 12;
 
 function App() {
   return (
