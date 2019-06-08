@@ -1,6 +1,7 @@
 export * from "./camera";
 export * from "./color-canvas";
 export * from "./color";
+export * from "./cube";
 export * from "./environment";
 export * from "./intersection";
 export * from "./light";
