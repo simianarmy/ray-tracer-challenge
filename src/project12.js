@@ -32,29 +32,25 @@ import "./App.css";
 const ProjectTitle = "Project 12";
 const HSIZE = 100;
 const VSIZE = 50;
-const RESOLUTION = 1;
-const CANVAS_SCALE = 2;
+const RESOLUTION = 2;
+const CANVAS_SCALE = 4;
 
 function Project6() {
     const fpattern = new SolidPattern(Color(0.2, 0.2, 0.1));
     fpattern.setTransform(multiply(rotationZ(0.5), scaling(0.9, 0.9, 0.9)));
 
+    // pond surface
     const floor = new Plane();
-    floor.material.color = Color(1, 0.8, 0.8);
+    floor.material.color = Color(0.1, 0.1, 0.7);
     floor.material.ambient = 0.2;
     floor.material.diffuse = 0.7;
     floor.material.reflective = 0.7;
-    floor.material.pattern = fpattern;
+    floor.material.transparency = 1;
+    floor.setTransform(translation(0, 1, 0));
 
-    const backWall = new Plane();
-    backWall.setTransform(
-      multiply(translation(0, 0, 10), rotationX(Math.PI / 2))
-    );
-    backWall.material.pattern = new Ring(new SolidPattern(Color(0.2, 0, 0.2)), new SolidPattern(Color(1, 1, 0.5)));
-    backWall.material.pattern.setTransform(multiply(rotationY(0.5), scaling(0.4, 0.4, 0.2)));
-
+    // rock under surface
     const middle = Sphere.Glass();
-    middle.setTransform(translation(-0.5, 1, 0.5));
+    middle.setTransform(multiply(translation(-0.5, 0, 1.5), scaling(0.6, 0.6, 0.6)));
     middle.material.color = Color(0.8, .4, 0.5);
     middle.material.ambient = 0.1;
     middle.material.diffuse = 0.2;
@@ -70,7 +66,7 @@ function Project6() {
 
     const right = Sphere.Glass();
     right.setTransform(
-      multiply(translation(1.5, 0.5, -0.5), scaling(0.6, 0.6, 0.6))
+      multiply(translation(1.5, 0, 1), scaling(0.6, 0.6, 0.6))
     );
     right.material.color = Color(0.2, 0.2, 0.6);
     right.material.ambient = 0.1;
@@ -85,8 +81,8 @@ function Project6() {
 
     const left = Sphere.Glass();
     left.setTransform(
-      multiply(translation(-1.5, .63, -0.75), scaling(0.6, 0.6, 0.6))
-    );
+      multiply(translation(-1.5, 0, 0.75), scaling(0.3, 0.3, 0.3))
+    )
     left.material.color = Color(0.4, 0.8, 0.1);
     left.material.diffuse = 0.1;
     left.material.ambient = 0.1;
@@ -99,7 +95,7 @@ function Project6() {
     //);
 
     const world = World();
-    world.objects = [floor, backWall, middle, right, left];
+    world.objects = [floor, middle, right, left];
     world.lightSource = PointLight(point(-10, 10, -10), Color(1, 1, 1));
 
     const camera = Camera(HSIZE * RESOLUTION, VSIZE * RESOLUTION, Math.PI / 3);
