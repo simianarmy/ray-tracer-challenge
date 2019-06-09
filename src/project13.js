@@ -42,14 +42,14 @@ function Project13() {
 
   const room = new Cube();
   room.material.ambient = 0.2;
-  room.material.reflective = 0.7;
+  room.material.reflective = 0.3;
   room.material.pattern = fpattern;
   //room.setTransform(multiply(multiply(rotationY(-0.2), scaling(10, 10, 10)), translation(0, 0, -2)));
   room.setTransform(multiply(multiply(translation(0, 4, -2), rotationY(1)), scaling(8, 8, 8)));
 
   const cube = new Cube();
   cube.setTransform(multiply(multiply(translation(-1.5, 0.3, 2.5), rotationY(-0.5)), rotationX(0.2)));
-  cube.material.ambient = 0.8;
+  cube.material.ambient = 0.9;
   cube.material.diffuse = 0.2;
   cube.material.specular = 1.0;
   cube.material.shininess = 300;
@@ -63,6 +63,8 @@ function Project13() {
   const cube2 = new Cube();
   cube2.setTransform(multiply(multiply(translation(2, 0.4, 2), rotationY(-0.5)), scaling(0.5, 0.5, 0.5)));
   cube2.material.color = Color(0, 0, 0.8);
+  cube2.material.ambient = 0.2;
+  cube2.material.reflective = 0.7;
 
   const cube3 = new Cube();
   cube3.setTransform(multiply(multiply(multiply(multiply(translation(.5, .8, 2), rotationX(-0.5)), rotationY(Math.PI/4)), rotationZ(0.6)), scaling(3.5, 0.2, 0.2)));
@@ -71,6 +73,7 @@ function Project13() {
     new SolidPattern(Color(0, 0.2, 0.5))
   );
   cube3.material.pattern = rpattern;
+  cube3.material.transparency = 0.5;
 
   const world = World();
   world.objects = [room, cube, cube2, cube3];
