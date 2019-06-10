@@ -137,4 +137,30 @@ export class ColorCanvas {
 
     return `${header}\n${body}`;
   }
+
+  toHtmlCanvas(htmlCanvas, scale = 1, scaleCanvas = null) {
+    // draw ppm to canvas for preview
+    var ctx = htmlCanvas.getContext("2d");
+    const imageData = this.toHTML5CanvasImageData();
+
+    ctx.putImageData(imageData, 0, 0);
+
+    if (scale !== 1 && scaleCanvas) {
+      scaleCanvas.width = imageData.width * scale;
+      scaleCanvas.height = imageData.height * scale;
+      scaleCanvas
+        .getContext("2d")
+        .drawImage(
+          htmlCanvas,
+          0,
+          0,
+          imageData.width,
+          imageData.height,
+          0,
+          0,
+          imageData.width * scale,
+          imageData.height * scale
+        );
+    }
+  }
 }

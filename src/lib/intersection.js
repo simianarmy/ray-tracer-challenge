@@ -82,7 +82,7 @@ export const prepareComputations = (is, ray, xs = [is]) => {
 
   for (let i = 0; i < xs.length; i++) {
     const intersection = xs[i];
-    const equalsHit = intersection == is;
+    const equalsHit = intersection.t === is.t && intersection.object.id === is.object.id;
 
     // if intersection is the hit
     if (equalsHit) {
