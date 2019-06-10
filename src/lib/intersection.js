@@ -116,3 +116,30 @@ export const prepareComputations = (is, ray, xs = [is]) => {
 
   return comps;
 };
+
+/**
+ * Calculates Schlick approximation from precomputed object
+ * @returns {Number}
+ */
+export const schlick = comps => {
+  let cos = dot(comps.eyev, comps.normalv);
+
+  // total internal reflection can only occur if n1 > n2
+  if (comps.n1 > comps.n2) {
+    const n = comps.n1 / comps.n2;
+    const sin2T = n * n * (1.0 - cos * cos);
+
+    if (sin2T > 1.0) {
+      return 1.0;
+    }
+
+    // compute cosine of theta_t
+    const cosT = Math.sqrt(1.0 - sin2T);
+
+    cos = cosT;
+  }
+
+  const r0 = Math.pow((comps.n1 - comps.n2) / (comps.n1 + comps.n2), 2);
+
+  return r0 + (1 - r0) * Math.pow(1 - cos, 5);
+};

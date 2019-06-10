@@ -2,7 +2,8 @@ import {
   Intersection,
   intersections,
   hit,
-  prepareComputations
+  prepareComputations,
+  schlick
 } from "./intersection";
 import { Sphere } from "./sphere";
 import { Plane } from "./plane";
@@ -170,6 +171,41 @@ describe("hit", () => {
       const comps = prepareComputations(is, r, xs);
       expect(comps.underPoint.z).toBeGreaterThan(EPSILON / 2);
       expect(comps.point.z).toBeLessThan(comps.underPoint.z);
+    });
+  });
+
+  describe("Schlick approximation", () => {
+    it("should handle total internal reflection", () => {
+      const shape = Sphere.Glass();
+      const r = Ray(point(0, 0, Math.sqrt(2) / 2), vector(0, 1, 0));
+      const xs = intersections(
+        { t: -Math.sqrt(2) / 2, object: shape },
+        { t: Math.sqrt(2) / 2, object: shape }
+      );
+      const comps = prepareComputations(xs[1], r, xs);
+      const reflectance = schlick(comps);
+      expect(reflectance).toEqual(1.0);
+    });
+
+    it("should handle perpendicular viewing angles", () => {
+      const shape = Sphere.Glass();
+      const r = Ray(point(0, 0, 0), vector(0, 1, 0));
+      const xs = intersections(
+        { t: -1, object: shape },
+        { t: 1, object: shape }
+      );
+      const comps = prepareComputations(xs[1], r, xs);
+      const reflectance = schlick(comps);
+      expect(reflectance).toEqual(0.04);
+    });
+
+    it("should handle small angle and n2 > n1", () => {
+      const shape = Sphere.Glass();
+      const r = Ray(point(0, 0.99, -2), vector(0, 0, 1));
+      const xs = intersections({ t: 1.8589, object: shape });
+      const comps = prepareComputations(xs[0], r, xs);
+      const reflectance = schlick(comps);
+      expect(reflectance).toBe(0.4887308);
     });
   });
 });
