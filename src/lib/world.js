@@ -5,7 +5,7 @@ import { Sphere } from "./sphere";
 import { Ray } from "./ray";
 import { scaling } from "./transformations";
 import { lighting } from "./material";
-import { hit, prepareComputations } from "./intersection";
+import { hit, prepareComputations, schlick } from "./intersection";
 
 // Maximum recursion level for colorAt, shadeHit, reflectColor
 const MAX_RECURSION_DEPTH = 4;
@@ -72,7 +72,19 @@ export const shadeHit = (world, comps, remaining = MAX_RECURSION_DEPTH) => {
   const reflected = reflectedColor(world, comps, remaining);
   const refracted = refractedColor(world, comps, remaining);
 
-  return Color.fromPoint(add(add(surface, reflected), refracted));
+  const material = comps.object.material;
+  let result;
+
+  if (material.transparency > 0 && material.reflective > 0) {
+    const reflectance = schlick(comps);
+
+    result = add(add(surface, multiply(reflected, reflectance)),
+      multiply(refracted, 1 - reflectance));
+  } else {
+    result = add(add(surface, reflected), refracted);
+  }
+
+  return Color.fromPoint(result);
 };
 
 /**

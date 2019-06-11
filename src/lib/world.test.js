@@ -166,6 +166,29 @@ describe("World", () => {
       const color = shadeHit(w, comps, 5);
       expect(color).toEqualColor(Color(0.93642, 0.68642, 0.68642));
     });
+
+    it("should use schlick reflectance with reflective, transparent material", () => {
+      const w = World.Default();
+      const floor = new Plane();
+      floor.setTransform(translation(0, -1, 0));
+      floor.material.reflective = 0.5;
+      floor.material.transparency = 0.5;
+      floor.material.refractiveIndex = 1.5;
+      w.objects.push(floor);
+      const ball = new Sphere();
+      ball.material.color = Color(1, 0, 0);
+      ball.material.ambient = 0.5;
+      ball.setTransform(translation(0, -3.5, -0.5));
+      w.objects.push(ball);
+      const r = Ray(
+        point(0, 0, -3),
+        vector(0, -Math.sqrt(2) / 2, Math.sqrt(2) / 2)
+      );
+      const xs = intersections({ t: Math.sqrt(2), object: floor });
+      const comps = prepareComputations(xs[0], r, xs);
+      const color = shadeHit(w, comps, 5);
+      expect(color).toEqualColor(Color(0.93391, 0.69643, 0.69243));
+    });
   });
 
   describe("colorAt", () => {

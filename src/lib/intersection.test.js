@@ -196,7 +196,7 @@ describe("hit", () => {
       );
       const comps = prepareComputations(xs[1], r, xs);
       const reflectance = schlick(comps);
-      expect(reflectance).toEqual(0.04);
+      expect(reflectance).toEqualFloat(0.04);
     });
 
     it("should handle small angle and n2 > n1", () => {
@@ -205,7 +205,7 @@ describe("hit", () => {
       const xs = intersections({ t: 1.8589, object: shape });
       const comps = prepareComputations(xs[0], r, xs);
       const reflectance = schlick(comps);
-      expect(reflectance).toBe(0.4887308);
+      expect(reflectance).toEqualFloat(0.48873);
     });
   });
 });
