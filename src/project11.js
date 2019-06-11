@@ -31,8 +31,8 @@ import "./App.css";
 
 // Control resolution = render time
 const ProjectTitle = "Project 11";
-const HSIZE = 200;
-const VSIZE = 100;
+const HSIZE = 100;
+const VSIZE = 50;
 const RESOLUTION = 2;
 const CANVAS_SCALE = 2;
 
@@ -106,7 +106,7 @@ class Animation extends React.Component {
     middle.material.diffuse = 0.2;
     middle.material.specular = 1.0;
     middle.material.shininess = 300;
-    middle.material.transparency = 0.7;
+    middle.material.transparency = 1;
     middle.material.reflective = 0.9;
     const mpattern = new Checkers(
       new SolidPattern(Color(0, 1, 0.2)),

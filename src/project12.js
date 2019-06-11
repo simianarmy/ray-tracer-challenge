@@ -35,49 +35,49 @@ const VSIZE = 50;
 const RESOLUTION = 2;
 const CANVAS_SCALE = 4;
 
-function Project6() {
-    const fpattern = new SolidPattern(Color(0.2, 0.2, 0.1));
-    fpattern.setTransform(multiply(rotationZ(0.5), scaling(0.9, 0.9, 0.9)));
+function Project12() {
 
     // pond surface
-    const floor = new Plane();
-    floor.material.color = Color(0.1, 0.1, 0.7);
-    floor.material.ambient = 0.2;
-    floor.material.diffuse = 0.7;
-    floor.material.reflective = 0.7;
-    floor.material.transparency = 1;
-    floor.setTransform(translation(0, 1, 0));
+    const water = new Plane();
+    water.material.color = Color(0.1, 0.1, 0.7);
+    water.material.ambient = 0.2;
+    water.material.diffuse = 0.7;
+    water.material.reflective = 0.5;
+    water.material.transparency = 1;
+    water.setTransform(translation(0, 1, 0));
 
-    // rock under surface
-    const middle = Sphere.Glass();
-    middle.setTransform(multiply(translation(-0.5, 0, 1.5), scaling(0.6, 0.6, 0.6)));
+  // pond floor
+  const floor = new Plane();
+
+  const fpattern = new Checkers(new SolidPattern(Color(0.2, 0.2, 0.1)),
+    new SolidPattern(Color(0.9, 0.6, 0.2)));
+  floor.material.pattern = fpattern;
+
+    const backWall = new Plane();
+    backWall.setTransform(
+      multiply(translation(0, 0, 15), rotationX(Math.PI / 2))
+    );
+    backWall.material.color = Color(0.1, 0.5, 0.1);
+
+  const wpattern = new Checkers(new SolidPattern(Color.White),
+    new SolidPattern(Color(1, 0, 0)));
+  backWall.material.pattern = wpattern;
+  backWall.material.pattern.setTransform(scaling(0.3, 0.3, 0.3));
+
+    // rocks under surface
+    const middle = new Sphere();
+    middle.setTransform(multiply(translation(-0.5, 0.4, .5), scaling(0.6, 0.6, 0.6)));
     middle.material.color = Color(0.8, .4, 0.5);
-    middle.material.ambient = 0.1;
-    middle.material.diffuse = 0.2;
+    middle.material.ambient = 0.9;
+    middle.material.diffuse = 0.7;
     middle.material.specular = 1.0;
     middle.material.shininess = 300;
-    middle.material.transparency = 0.7;
-    middle.material.reflective = 0.9;
-    const mpattern = new Checkers(
-      new SolidPattern(Color(0, 1, 0.2)),
-      new SolidPattern(Color(0, 0.1, 1))
-    );
-    //middle.material.pattern = mpattern; //new Perturbed(mpattern);
-
-    const right = Sphere.Glass();
-    right.setTransform(
-      multiply(translation(1.5, 0, 1), scaling(0.6, 0.6, 0.6))
-    );
-    right.material.color = Color(0.2, 0.2, 0.6);
-    right.material.ambient = 0.1;
-    right.material.diffuse = 0.3;
-    right.material.specular = 1.0;
-    const rpattern = new RadialGradient(
-      new SolidPattern(Color.White),
-      new SolidPattern(Color(0, 0.2, 0.5))
-    );
-    rpattern.setTransform(multiply(rotationZ(0.5), scaling(0.1, 0.1, 0.2)));
-    //right.material.pattern = new Perturbed(rpattern);
+    //middle.material.transparency = 0.7;
+    //middle.material.reflective = 0.9;
+    //const mpattern = new Checkers(
+      //new SolidPattern(Color(0, 1, 0.2)),
+      //new SolidPattern(Color(0, 0.1, 1))
+    //);
 
     const left = Sphere.Glass();
     left.setTransform(
@@ -95,7 +95,7 @@ function Project6() {
     //);
 
     const world = World();
-    world.objects = [floor, middle, right, left];
+    world.objects = [water, floor, backWall, middle];
     world.lightSource = PointLight(point(-10, 10, -10), Color(1, 1, 1));
 
     const camera = Camera(HSIZE * RESOLUTION, VSIZE * RESOLUTION, Math.PI / 3);
@@ -115,4 +115,4 @@ function Project6() {
   );
 }
 
-export default Project6;
+export default Project12;

@@ -27,7 +27,7 @@ const projects = [
   Project12,
   Project13
 ];
-const ProjectNum = 13;
+const ProjectNum = 12;
 
 function App() {
   return (
