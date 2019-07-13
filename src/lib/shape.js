@@ -9,10 +9,12 @@ class Shape {
   constructor(props) {
     props = Object.assign(props || {},
       { transformation: Matrix.identity,
-        material: Material()
+        material: Material(),
+        parent: null
       });
     this.transformation = props.transformation;
     this.material = props.material;
+    this.parent = props.parent;
     this.id = uuidv1();
   }
 

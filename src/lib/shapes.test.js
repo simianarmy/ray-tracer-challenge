@@ -10,6 +10,10 @@ const testShape = () => {
 };
 
 describe("Shape", () => {
+  it("has a parent attribute", () => {
+    expect(testShape().parent).toBe(null);
+  });
+
   describe("testShape", () => {
     it("should have transformation that is the identity matrix",  () => {
       expect(testShape().transformation).toEqualMatrix(Matrix.identity);
