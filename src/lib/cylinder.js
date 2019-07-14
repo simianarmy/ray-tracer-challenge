@@ -2,6 +2,7 @@ import { Shape } from "./shape";
 import { EPSILON } from "./math";
 import { Intersection } from "./intersection";
 import { vector } from "./tuple";
+import { Bounds } from "./bounds";
 
 // intersection helpers
 // checks to see if the intersection at `t` is within a radius
@@ -94,6 +95,15 @@ class Cylinder extends Shape {
     }
 
     return xs;
+  }
+
+  bounds() {
+    let bounds = Bounds();
+
+    bounds.min.y = this.minimum;
+    bounds.max.y = this.maximum;
+
+    return bounds;
   }
 }
 

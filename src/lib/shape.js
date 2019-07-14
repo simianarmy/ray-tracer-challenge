@@ -2,6 +2,7 @@ import { Matrix, inverse,  multiplyTuple, transpose } from "./matrix";
 import { Material } from "./material";
 import { transform } from "./ray";
 import { normalize, vector } from "./tuple";
+import { Bounds } from "./bounds";
 
 const uuidv1 = require("uuid/v1");
 
@@ -80,6 +81,14 @@ class Shape {
     }
 
     return normal;
+  }
+
+  /**
+   * @returns {Bounds}
+   */
+  bounds() {
+    // default is fine for some shapes
+    return Bounds();
   }
 }
 
