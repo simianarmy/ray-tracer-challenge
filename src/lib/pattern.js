@@ -29,7 +29,7 @@ class Pattern {
    * @returns {Color}
    */
   patternAtShape(object, p) {
-    const localPoint = multiplyTuple(inverse(object.getTransform()), p);
+    const localPoint = object.worldToObject(p);
     return this.patternAt(localPoint);
   }
 

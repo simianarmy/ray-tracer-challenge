@@ -1,7 +1,9 @@
 import { Shape } from "./shape";
+import { Group } from "./group";
+import { Sphere } from "./sphere";
 import { Matrix, multiply } from "./matrix";
 import { Material } from "./material";
-import { rotationZ, translation, scaling } from "./transformations";
+import { rotationZ, translation, rotationY, scaling } from "./transformations";
 import { Ray } from "./ray";
 import { point, vector } from "./tuple";
 
@@ -79,6 +81,49 @@ describe("Shape", () => {
       ts.setTransform(m);
       const n = ts.normalAt(point(0, Math.sqrt(2) / 2, -Math.sqrt(2) / 2));
       expect(n).toEqualTuple(vector(0, 0.97014, -0.24254));
+    });
+
+    it("on a child object in a group", () => {
+      const g1 = new Group();
+      g1.setTransform(rotationY(Math.PI / 2));
+      const g2 = new Group();
+      g2.setTransform(scaling(1, 2, 3));
+      g1.addChild(g2);
+      const s = new Sphere();
+      s.setTransform(translation(5, 0, 0));
+      g2.addChild(s);
+      const n = s.normalAt(point(1.7321, 1.1547, -5.5774));
+      expect(n).toEqualVector(vector(0.28570, 0.428543, -0.85716));
+    });
+  });
+
+  describe("converting a point from world space to object space", () => {
+    it("should respect group hierarchy", () => {
+      const g1 = new Group();
+      g1.setTransform(rotationY(Math.PI / 2));
+      const g2 = new Group();
+      g2.setTransform(scaling(2, 2, 2));
+      g1.addChild(g2);
+      const s = new Sphere();
+      s.setTransform(translation(5, 0, 0));
+      g2.addChild(s);
+      const p = s.worldToObject(point(-2, 0, -10));
+      expect(p).toEqualPoint(point(0, 0, -1));
+    });
+  });
+
+  describe("converting a normal from object space to world space", () => {
+    it("should respect group hierarchy", () => {
+      const g1 = new Group();
+      g1.setTransform(rotationY(Math.PI / 2));
+      const g2 = new Group();
+      g2.setTransform(scaling(1, 2, 3));
+      g1.addChild(g2);
+      const s = new Sphere();
+      s.setTransform(translation(5, 0, 0));
+      g2.addChild(s);
+      const n = s.normalToWorld(vector(Math.sqrt(3)/3, Math.sqrt(3)/3, Math.sqrt(3)/3));
+      expect(n).toEqualVector(vector(0.28571, 0.42857, -0.85714));
     });
   });
 });
