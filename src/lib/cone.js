@@ -2,6 +2,7 @@ import { Shape } from "./shape";
 import { EPSILON } from "./math";
 import { Intersection } from "./intersection";
 import { vector } from "./tuple";
+import { Bounds } from "./bounds";
 
 // intersection helpers
 // checks to see if the intersection at `t` is within the radius of the cone
@@ -110,6 +111,17 @@ class Cone extends Shape {
     }
 
     return xs;
+  }
+
+  bounds() {
+    let bounds = Bounds();
+
+    bounds.min.y = this.minimum;
+    bounds.max.y = this.maximum;
+
+    bounds.min.x = bounds.min.y = -Math.max(Math.abs(bounds.min.y), Math.abs(bounds.max.y));
+    bounds.max.x = bounds.max.y = Math.max(Math.abs(bounds.min.y), Math.abs(bounds.max.y));
+    return bounds;
   }
 }
 

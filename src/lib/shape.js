@@ -90,6 +90,15 @@ class Shape {
     // default is fine for some shapes
     return Bounds();
   }
+
+  boundsInParentSpace() {
+    let bounds = this.bounds();
+
+    bounds.min = multiplyTuple(this.transformation, bounds.min);
+    bounds.max = multiplyTuple(this.transformation, bounds.max);
+
+    return bounds;
+  }
 }
 
 export { Shape };

@@ -2,6 +2,7 @@ import { Shape } from "./shape";
 import { multiplyTuple } from "./matrix";
 import { Bounds } from "./bounds";
 import { Cube } from "./cube";
+import { BoundingBox } from "./bounding-box";
 
 export class Group extends Shape {
   constructor(props) {
@@ -40,41 +41,21 @@ export class Group extends Shape {
       return bounds;
     }
 
+    let bbs = [];
+
     // convert bounds of children into "group space"
     this.shapes.forEach(shape => {
-      // bounds_in_parent_space(shape)
-      const bb = shape.bounds();
-      const minPoint = multiplyTuple(shape.transformation, bb.min);
-      const maxPoint = multiplyTuple(shape.transformation, bb.max);
+      //const shapeBounds = shape.boundsInParentSpace();
+      const shapeBB = BoundingBox(shape.bounds());
 
-      // I think we need to check all 8 corners of the bounding box here?
+    //  transform all 8 corners of the bounding box
+      const transformedBB = shapeBB.corners().map(p => {
+        return multiplyTuple(shape.transformation, p);
+      });
 
-      if (minPoint.x < bounds.min.x) {
-        bounds.min.x = minPoint.x;
-      }
-
-      if (minPoint.y < bounds.min.y) {
-        bounds.min.y = minPoint.y;
-      }
-
-      if (minPoint.z < bounds.min.z) {
-        bounds.min.z = minPoint.z;
-      }
-
-      if (maxPoint.x > bounds.max.x) {
-        bounds.max.x = maxPoint.x;
-      }
-
-      if (maxPoint.y > bounds.max.y) {
-        bounds.max.y = maxPoint.y;
-      }
-      if (maxPoint.z > bounds.max.z) {
-        bounds.max.z = maxPoint.z;
-      }
+      bbs.push(transformedBB);
     });
 
-    // TODO: transform bounding box:
-    // TODO: transform all 8 corners of the cube?
     // TODO: find a single box to contain all corners
     return bounds;
   }
