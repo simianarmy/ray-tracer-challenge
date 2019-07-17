@@ -119,8 +119,8 @@ class Cone extends Shape {
     bounds.min.y = this.minimum;
     bounds.max.y = this.maximum;
 
-    bounds.min.x = bounds.min.y = -Math.max(Math.abs(bounds.min.y), Math.abs(bounds.max.y));
-    bounds.max.x = bounds.max.y = Math.max(Math.abs(bounds.min.y), Math.abs(bounds.max.y));
+    bounds.min.x = bounds.min.z = -Math.max(Math.abs(bounds.min.y), Math.abs(bounds.max.y));
+    bounds.max.x = bounds.max.z = Math.max(Math.abs(bounds.min.y), Math.abs(bounds.max.y));
     return bounds;
   }
 }

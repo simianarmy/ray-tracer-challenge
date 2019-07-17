@@ -3,6 +3,7 @@ import { multiplyTuple } from "./matrix";
 import { Bounds } from "./bounds";
 import { Cube } from "./cube";
 import { BoundingBox } from "./bounding-box";
+import { point } from "./tuple";
 
 export class Group extends Shape {
   constructor(props) {
@@ -41,22 +42,46 @@ export class Group extends Shape {
       return bounds;
     }
 
-    let bbs = [];
+    let xs = [], ys = [], zs = [];
 
     // convert bounds of children into "group space"
     this.shapes.forEach(shape => {
       //const shapeBounds = shape.boundsInParentSpace();
       const shapeBB = BoundingBox(shape.bounds());
+      //console.log("shapeBB", shapeBB);
 
-    //  transform all 8 corners of the bounding box
-      const transformedBB = shapeBB.corners().map(p => {
+      // transform all 8 corners of the bounding box
+      const transformedBB = shapeBB.corners.map(p => {
+        // Don't try to multiply by infinity
+        if (Math.abs(p.x) === Number.POSITIVE_INFINITY ||
+          Math.abs(p.y) === Number.POSITIVE_INFINITY ||
+          Math.abs(p.z) === Number.POSITIVE_INFINITY) {
+          return p;
+        }
         return multiplyTuple(shape.transformation, p);
       });
 
-      bbs.push(transformedBB);
+      //console.log("transformed bb", transformedBB);
+      transformedBB.forEach(tp => {
+        xs.push(tp.x);
+        ys.push(tp.y);
+        zs.push(tp.z);
+      });
     });
 
-    // TODO: find a single box to contain all corners
+    let minX, minY, minZ, maxX, maxY, maxZ;
+
+    // find a single box to contain all corners
+    minX = Math.min.apply(null, xs);
+    minY = Math.min.apply(null, ys);
+    minZ = Math.min.apply(null, zs);
+    maxX = Math.max.apply(null, xs);
+    maxY = Math.max.apply(null, ys);
+    maxZ = Math.max.apply(null, zs);
+
+    bounds.min = point(minX, minY, minZ);
+    bounds.max = point(maxX, maxY, maxZ);
+
     return bounds;
   }
 }

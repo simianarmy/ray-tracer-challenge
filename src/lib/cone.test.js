@@ -117,8 +117,9 @@ describe("Cone", () => {
 
   describe("bounds", () => {
     it("should have infinite minimum and maximum bounds", () => {
-      expect(shape.minimum).toBe(Number.NEGATIVE_INFINITY);
-      expect(shape.maximum).toBe(Number.POSITIVE_INFINITY);
+      const bounds = shape.bounds();
+      expect(bounds.min.y).toBe(Number.NEGATIVE_INFINITY);
+      expect(bounds.max.y).toBe(Number.POSITIVE_INFINITY);
     });
   });
 });

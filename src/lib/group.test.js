@@ -1,10 +1,12 @@
 import { Group } from "./group";
 import { Shape } from "./shape";
 import { Sphere } from "./sphere";
+import { Cube } from "./cube";
+import { Cone } from "./cone";
 import { Matrix } from "./matrix";
 import { Ray } from "./ray";
 import { point, vector } from "./tuple";
-import { scaling, translation } from "./transformations";
+import { scaling, translation, rotationY } from "./transformations";
 
 describe("Group", () => {
   let g;
@@ -63,6 +65,46 @@ describe("Group", () => {
       const ray = Ray(point(10, 0, -10), vector(0, 0, 1));
       const xs = g.intersect(ray);
       expect(xs.length).toBe(2);
+    });
+  });
+
+  describe("bounding box", () => {
+    it("should calculate bounding box of empty group", () => {
+      expect(g.bounds().min).toEqualPoint(point(-1, -1, -1));
+      expect(g.bounds().max).toEqualPoint(point(1, 1, 1));
+    });
+
+    it("should calculate containing box of untransformed shapes", () => {
+      const s = new Sphere();
+      g.addChild(s);
+      const c = new Cube();
+      g.addChild(c);
+      const bounds = g.bounds();
+      expect(g.bounds().min).toEqualPoint(point(-1, -1, -1));
+      expect(g.bounds().max).toEqualPoint(point(1, 1, 1));
+    });
+
+    it("should calculate containing box of transformed shapes", () => {
+      const s = new Sphere();
+      s.setTransform(translation(5, -2, 0));
+      g.addChild(s);
+      const c = new Cube();
+      c.setTransform(rotationY(Math.PI/2));
+      const c2 = new Cube();
+      c2.setTransform(scaling(3, 2, 5));
+      g.addChild(c2);
+      const bounds = g.bounds();
+      expect(bounds.min).toEqualPoint(point(-3, -3, -5));
+      expect(bounds.max).toEqualPoint(point(6, 2, 5));
+    });
+
+    it("should calculate containing box of shapes with infinite bounds", () => {
+      const c = new Cone();
+      c.minimum = -2;
+      g.addChild(c);
+      const bounds = g.bounds();
+      expect(bounds.min.y).toBe(-2);
+      expect(bounds.max.y).toBe(Number.POSITIVE_INFINITY);
     });
   });
 });
