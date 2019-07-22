@@ -103,6 +103,7 @@ describe("Group", () => {
       c.minimum = -2;
       g.addChild(c);
       const bounds = g.bounds();
+      expect(bounds.min.x).toBe(Number.NEGATIVE_INFINITY);
       expect(bounds.min.y).toBe(-2);
       expect(bounds.max.y).toBe(Number.POSITIVE_INFINITY);
     });

@@ -19,11 +19,13 @@ export const perlin = (x, y, z) => {
  * assuming planes offset -1, 1 from origin
  * @param {Number} origin
  * @param {Number} direction
+ * @param {Number} minAxis min value for axis being tested
+ * @param {Number} maxAxis max value for axis being tested
  * @returns [Number, Number] tmin, tmax
  */
-export const checkAxis = (origin, direction) => {
-  const tminNumerator = -1 - origin;
-  const tmaxNumerator = 1 - origin;
+export const checkAxis = (origin, direction, minAxis = -1, maxAxis = 1) => {
+  const tminNumerator = minAxis - origin;
+  const tmaxNumerator = maxAxis - origin;
   let tmin, tmax;
 
   if (Math.abs(direction) >= EPSILON) {
