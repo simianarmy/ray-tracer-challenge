@@ -5,6 +5,7 @@ export * from "./cone";
 export * from "./cube";
 export * from "./cylinder";
 export * from "./environment";
+export * from "./group";
 export * from "./intersection";
 export * from "./light";
 export * from "./material";

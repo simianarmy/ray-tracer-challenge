@@ -10,6 +10,7 @@ import Project11 from "./project11";
 import Project12 from "./project12";
 import Project13 from "./project13";
 import Project14 from "./project14";
+import Project15 from "./project15";
 import "./App.css";
 
 const projects = [
@@ -27,14 +28,14 @@ const projects = [
   Project11,
   Project12,
   Project13,
-  Project14
+  Project14,
+  Project15
 ];
-const ProjectNum = 14;
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">{projects[ProjectNum]()}</header>
+      <header className="App-header">{projects[projects.length-1]()}</header>
     </div>
   );
 }
