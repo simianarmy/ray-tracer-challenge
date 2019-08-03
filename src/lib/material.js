@@ -1,7 +1,7 @@
 import {
   Color,
-  add,
-  multiply as multiplyColor,
+  addColor,
+  multiplyColor,
   multiplyByScalar
 } from "./color";
 import { dot, multiply, negate, normalize, reflect, sub } from "./tuple";
@@ -95,5 +95,5 @@ export const lighting = (
     }
   }
 
-  return add(add(ambient, diffuse), specular);
+  return addColor(addColor(ambient, diffuse), specular);
 };

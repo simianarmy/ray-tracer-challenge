@@ -4,6 +4,7 @@ import { Noise } from "noisejs";
 export const EPSILON = 0.00001;
 export const floatIsEqual = (f1, f2) => Math.abs(f1 - f2) < EPSILON; // Number.EPSILON;
 export const degreesToRadians = d => d / 180 * Math.PI;
+export const isZero = f => Math.abs(f) < EPSILON;
 
 export const perlin = (x, y, z) => {
   // one time initialization of Noise object
@@ -16,7 +17,7 @@ export const perlin = (x, y, z) => {
 
 /**
  * generalized ray-plane intersection alg. helper
- * assuming planes offset -1, 1 from origin
+ * assuming planes offset -1, 1 from origin (default)
  * @param {Number} origin
  * @param {Number} direction
  * @param {Number} minAxis min value for axis being tested

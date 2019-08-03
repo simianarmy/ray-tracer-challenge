@@ -17,6 +17,7 @@ export * from "./ppm";
 export * from "./projectile";
 export * from "./ray";
 export * from "./sphere";
+export * from "./triangle";
 export * from "./transformations";
 export * from "./tuple";
 export * from "./world";

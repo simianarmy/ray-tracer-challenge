@@ -1,8 +1,8 @@
 import {
   Color as color,
-  add,
-  subtract,
-  multiply,
+  addColor,
+  subtractColor,
+  multiplyColor,
   multiplyByScalar
 } from "./color";
 import { equals } from "./tuple";
@@ -20,7 +20,7 @@ describe("Color", () => {
       const c1 = color(0.9, 0.6, 0.75);
       const c2 = color(0.7, 0.1, 0.25);
       const expected = color(1.6, 0.7, 1.0);
-      expect(equals(add(c1, c2), expected)).toBeTruthy();
+      expect(equals(addColor(c1, c2), expected)).toBeTruthy();
     });
   });
 
@@ -29,7 +29,7 @@ describe("Color", () => {
       const c1 = color(0.9, 0.6, 0.75);
       const c2 = color(0.7, 0.1, 0.25);
       const expected = color(0.2, 0.5, 0.5);
-      expect(equals(subtract(c1, c2), expected)).toBeTruthy();
+      expect(equals(subtractColor(c1, c2), expected)).toBeTruthy();
     });
   });
 
@@ -46,7 +46,7 @@ describe("Color", () => {
       const c1 = color(1, 0.2, 0.4);
       const c2 = color(0.9, 1, 0.1);
       const expected = color(0.9, 0.2, 0.04);
-      expect(equals(multiply(c1, c2), expected)).toBeTruthy();
+      expect(equals(multiplyColor(c1, c2), expected)).toBeTruthy();
     });
   });
 });

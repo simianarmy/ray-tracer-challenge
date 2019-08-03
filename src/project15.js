@@ -30,7 +30,8 @@ import {
   Cube,
   Cylinder,
   Cone,
-  Group
+  Group,
+  Triangle
 } from "./lib/index";
 import { multiply } from "./lib/matrix";
 import { Scene } from "./components/scene";
@@ -38,10 +39,10 @@ import "./App.css";
 
 // Control resolution = render time
 const ProjectTitle = "Project 15";
-const HSIZE = 200;
+const HSIZE = 100;
 const VSIZE = 100;
-const RESOLUTION = 2;
-const CANVAS_SCALE = 4;
+const RESOLUTION = 1;
+const CANVAS_SCALE = 2;
 
 function Project15() {
   function hexCorner() {
@@ -85,24 +86,42 @@ function Project15() {
     return hex;
   }
 
-  const fpattern = new SolidPattern(Color(0.4, 0.4, 0.8));
+  const fpattern = new SolidPattern(Color(0.8, 0.8, 0.8));
 
   const room = new Cube();
   room.material.reflective = 0;
   room.material.pattern = fpattern;
-  room.setTransform(multiply(multiply(translation(-2, 1, -2), rotationY(1)), scaling(8, 8, 8)));
+  room.setTransform(multiply(rotationY(Math.PI/1.2), scaling(80, 80, 80)));
 
   const hex = hexagon();
   hex.setTransform(translation(-0.5, 0.4, 2));
 
-  const world = World();
-  world.objects = [room, hex];
-  world.lightSource = PointLight(point(-6, 6, -6), Color(1, 1, 1));
+  const tgroup = new Group();
 
-  const camera = Camera(HSIZE * RESOLUTION, VSIZE * RESOLUTION, Math.PI / 3);
+  const tri1 = new Triangle(point(0, 0, 0), point(8, 0, 0), point(4, 4, 9));
+  const tri2 = new Triangle(point(8, 0, 0), point(8, 8, 0), point(4, 4, 9));
+  const tri3 = new Triangle(point(8, 8, 0), point(0, 8, 0), point(4, 4, 9));
+  const tri4 = new Triangle(point(0, 0, 0), point(0, 8, 0), point(4, 4, 9));
+
+  tgroup.addChild(tri1);
+  tgroup.addChild(tri2);
+  tgroup.addChild(tri3);
+  tgroup.addChild(tri4);
+
+  tgroup.setTransform(multiply(multiply(translation(0, 2, 0), rotationY(Math.PI/1.5)), scaling(2.5, 2.5, 2.5)));
+  tri1.material.pattern = new SolidPattern(Color(0.8, 0.2, 0.8));
+  tri2.material.pattern = new SolidPattern(Color(0.6, 0.2, 0.3));
+  tri3.material.pattern = new SolidPattern(Color(0.4, 0.4, 0.8));
+  tri4.material.pattern = new SolidPattern(Color(0.2, 0.8, 0.8));
+
+  const world = World();
+  world.objects = [room, /*hex,*/ tgroup];
+  world.lightSource = PointLight(point(10, 50, -20), Color(1, 1, 1));
+
+  const camera = Camera(HSIZE * RESOLUTION, VSIZE * RESOLUTION, .785);
   camera.transform = viewTransform(
-    point(0, 2.5, -3),
-    point(0, 0, 1),
+    point(0, 6, -10),
+    point(0, 0, 6),
     vector(0, 1, 0)
   );
 

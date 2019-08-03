@@ -14,12 +14,12 @@ Color.Green = Color(0, 1, 0);
 Color.Blue = Color(0, 0, 1);
 Color.White = Color(1, 1, 1);
 
-export const add = (c1, c2) => {
+export const addColor = (c1, c2) => {
   const c = tadd(c1, c2);
   return Color(c.x, c.y, c.z);
 };
 
-export const subtract = (c1, c2) => {
+export const subtractColor = (c1, c2) => {
   const c = tsub(c1, c2);
   return Color(c.x, c.y, c.z);
 };
@@ -29,7 +29,7 @@ export const multiplyByScalar = (c1, s) => {
   return Color(c.x, c.y, c.z);
 };
 
-export const multiply = (c1, c2) => {
+export const multiplyColor = (c1, c2) => {
   const r = c1.red * c2.red;
   const g = c1.green * c2.green;
   const b = c1.blue * c2.blue;
