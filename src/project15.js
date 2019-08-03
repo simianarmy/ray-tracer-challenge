@@ -41,7 +41,7 @@ import "./App.css";
 const ProjectTitle = "Project 15";
 const HSIZE = 100;
 const VSIZE = 100;
-const RESOLUTION = 1;
+const RESOLUTION = 3;
 const CANVAS_SCALE = 2;
 
 function Project15() {
@@ -91,28 +91,36 @@ function Project15() {
   const room = new Cube();
   room.material.reflective = 0;
   room.material.pattern = fpattern;
-  room.setTransform(multiply(rotationY(Math.PI/1.2), scaling(80, 80, 80)));
+  room.setTransform(scaling(80, 80, 80));
 
   const hex = hexagon();
   hex.setTransform(translation(-0.5, 0.4, 2));
 
   const tgroup = new Group();
 
-  const tri1 = new Triangle(point(0, 0, 0), point(8, 0, 0), point(4, 4, 9));
-  const tri2 = new Triangle(point(8, 0, 0), point(8, 8, 0), point(4, 4, 9));
-  const tri3 = new Triangle(point(8, 8, 0), point(0, 8, 0), point(4, 4, 9));
-  const tri4 = new Triangle(point(0, 0, 0), point(0, 8, 0), point(4, 4, 9));
+//[0, 3, 2] [0, 2, 1] [0,1, 4] [0, 4, 3] [4, 2, 3] [2, 4, 1]
+  const tri1 = new Triangle(point(0, 0, 0), point(8, 0, 0), point(4, 9, 4));
+  const tri2 = new Triangle(point(8, 0, 0), point(8, 0, 8), point(4, 9, 4));
+  const tri3 = new Triangle(point(8, 0, 8), point(0, 0, 8), point(4, 9, 4));
+  const tri4 = new Triangle(point(0, 0, 0), point(0, 0, 8), point(4, 9, 4));
+  const tri5 = new Triangle(point(0, 0, 0), point(8, 0, 8), point(0, 0, 8));
+  const tri6 = new Triangle(point(0, 0, 0), point(8, 0, 8), point(8, 0, 0));
 
   tgroup.addChild(tri1);
   tgroup.addChild(tri2);
   tgroup.addChild(tri3);
   tgroup.addChild(tri4);
+  tgroup.addChild(tri5);
+  tgroup.addChild(tri6);
 
-  tgroup.setTransform(multiply(multiply(translation(0, 2, 0), rotationY(Math.PI/1.5)), scaling(2.5, 2.5, 2.5)));
-  tri1.material.pattern = new SolidPattern(Color(0.8, 0.2, 0.8));
-  tri2.material.pattern = new SolidPattern(Color(0.6, 0.2, 0.3));
-  tri3.material.pattern = new SolidPattern(Color(0.4, 0.4, 0.8));
-  tri4.material.pattern = new SolidPattern(Color(0.2, 0.8, 0.8));
+  tgroup.setTransform(multiply(multiply(translation(-6, -10, 30), multiply(rotationY(Math.PI/2.5), rotationZ(-Math.PI/3))), scaling(1.0, 1.0, 1.0)));
+  //tgroup.setTransform(multiply(translation(0, 1, 40), scaling(2.0, 2.0, 2.0)));
+  tri1.material.pattern = new SolidPattern(Color.Green);
+  tri2.material.pattern = new SolidPattern(Color.Black);
+  tri3.material.pattern = new SolidPattern(Color.Red);
+  tri4.material.pattern = new SolidPattern(Color.White);
+  tri5.material.pattern = new SolidPattern(Color.Blue);
+  tri6.material.pattern = new SolidPattern(Color(0.5, 0.5, 0.5));
 
   const world = World();
   world.objects = [room, /*hex,*/ tgroup];
@@ -120,7 +128,7 @@ function Project15() {
 
   const camera = Camera(HSIZE * RESOLUTION, VSIZE * RESOLUTION, .785);
   camera.transform = viewTransform(
-    point(0, 6, -10),
+    point(0, 6, -12),
     point(0, 0, 6),
     vector(0, 1, 0)
   );

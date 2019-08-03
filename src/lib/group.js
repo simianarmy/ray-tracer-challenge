@@ -6,6 +6,8 @@ import { BoundingBox } from "./bounding-box";
 import { point } from "./tuple";
 import { checkAxis } from "./math";
 
+const ENABLE_BOUNDING_BOX = false;
+
 export class Group extends Shape {
   constructor(props) {
     super(props);
@@ -24,21 +26,23 @@ export class Group extends Shape {
   }
 
   localIntersect(ray) {
-    // OPTIMIZATION
-    // First test the ray against the group's bounding box
-    const bb = this.bounds();
+    if (ENABLE_BOUNDING_BOX) {
+      // OPTIMIZATION
+      // First test the ray against the group's bounding box
+      const bb = this.bounds();
 
-    const [xtmin, xtmax] = checkAxis(ray.origin.x, ray.direction.x, bb.min.x, bb.max.x);
-    const [ytmin, ytmax] = checkAxis(ray.origin.y, ray.direction.y, bb.min.y, bb.max.y);
-    const [ztmin, ztmax] = checkAxis(ray.origin.z, ray.direction.z, bb.min.z, bb.max.z);
+      const [xtmin, xtmax] = checkAxis(ray.origin.x, ray.direction.x, bb.min.x, bb.max.x);
+      const [ytmin, ytmax] = checkAxis(ray.origin.y, ray.direction.y, bb.min.y, bb.max.y);
+      const [ztmin, ztmax] = checkAxis(ray.origin.z, ray.direction.z, bb.min.z, bb.max.z);
 
-    const tmin = Math.max(xtmin, ytmin, ztmin);
-    const tmax = Math.min(xtmax, ytmax, ztmax);
+      const tmin = Math.max(xtmin, ytmin, ztmin);
+      const tmax = Math.min(xtmax, ytmax, ztmax);
 
-    // only if ray intersects bounding box should ray be tested against
-    // children
-    if (tmin > tmax) {
-      return [];
+      // only if ray intersects bounding box should ray be tested against
+      // children
+      if (tmin > tmax) {
+        return [];
+      }
     }
 
     const intersections = this.shapes.reduce((acc, shape) => {
