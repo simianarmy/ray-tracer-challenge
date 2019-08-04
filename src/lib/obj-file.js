@@ -1,6 +1,18 @@
+import axios from "axios";
+
 import { point } from "./tuple";
 import { Group } from "./group";
 import { Triangle } from "./triangle";
+
+export async function parseObjFromUrl(url) {
+  const res = await axios.get(url);
+
+  if (res.data) {
+    return parseObjFile(res.data);
+  } else {
+    return "";
+  }
+}
 
 /**
  * @param {String} input
@@ -21,12 +33,41 @@ class Parser {
     this.lastInstruction = null;
     this.lastVertexGroupIndex = 0;
     this.defaultGroup = new Group();
+    this.activeGroup = this.defaultGroup;
+    this.groups = {
+      default: this.defaultGroup
+    };
+  }
+
+  getGroupByName(name) {
+    return this.groups[name];
   }
 
   parseString(str) {
     str.split("\n").forEach(line => {
       this.parseLine(line);
     });
+  }
+
+  /**
+   * @returns {Group} representation of the input
+   */
+  toGroup() {
+    const res = new Group();
+
+    Object.keys(this.groups).forEach(g => {
+      if (this.groups[g].shapes.length) {
+        this.groups[g].name = g;
+        res.addChild(this.groups[g]);
+      }
+    });
+
+    return res;
+  }
+
+  createGroup(name) {
+    this.groups[name] = new Group();
+    return this.groups[name];
   }
 
   getVertexByIndex(idx) {
@@ -69,30 +110,48 @@ class Parser {
   parseLine(line) {
     //console.log("parsing line", line);
     const parts = line.split(' ').filter(c => c !== "\n").map(p => p.trim());
+    const command = parts[0];
 
     //console.log("parts", parts);
-    if (parts[0] === "v") {
-      if (this.lastInstruction !== "v") {
-        this.lastVertexGroupIndex = this.vertices.length - 1;
-      }
-      const p = this.parseVertex(parts);
-      //console.log("parsed point", p);
-      this.vertices.push(p);
-      this.lastInstruction = "v";
-    } else if (parts[0] === "f") {
-      // if polygon
-      if (parts.length > 4) {
-        // TODO: generalize for all face instructions
-        this.triangulatePolygon(parts).forEach(triangle => {
-          this.defaultGroup.addChild(triangle);
-        });
-      } else {
-        this.defaultGroup.addChild(this.parseFace(parts));
-      }
+    switch (command) {
+      case "v":
+        if (this.lastInstruction !== "v") {
+          this.lastVertexGroupIndex = this.vertices.length - 1;
+        }
+        const p = this.parseVertex(parts);
+        //console.log("parsed point", p);
+        this.vertices.push(p);
+        this.lastInstruction = "v";
+        break;
 
-      this.lastInstruction = "f";
-    } else {
-      this.ignoredLines.push(line);
+      case "f":
+        // if polygon
+        if (parts.length > 4) {
+          // TODO: generalize for all face instructions
+          this.triangulatePolygon(parts).forEach(triangle => {
+            this.activeGroup.addChild(triangle);
+          });
+        } else {
+          this.activeGroup.addChild(this.parseFace(parts));
+        }
+
+        this.lastInstruction = "f";
+        break;
+
+      case "g":
+        const groupName = parts[1];
+        let namedGroup = this.getGroupByName(groupName);
+
+        if (!namedGroup) {
+          namedGroup = this.createGroup(groupName);
+        }
+
+        this.activeGroup = namedGroup;
+        break;
+
+      default:
+        this.ignoredLines.push(line);
+        break;
     }
   }
 }

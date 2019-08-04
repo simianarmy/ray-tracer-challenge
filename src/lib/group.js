@@ -14,6 +14,7 @@ export class Group extends Shape {
 
     this.shapes = [];
     this.boundingBox = null;
+    this.name = "";
   }
 
   addChild(shape) {
