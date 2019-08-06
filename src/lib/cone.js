@@ -70,7 +70,7 @@ class Cone extends Shape {
     return this.intersectCaps(ray, xs);
   }
 
-  localNormalAt(p) {
+  localNormalAt(p, i) {
     const dist = p.x * p.x + p.z * p.z;
 
     if (dist < 1 && p.y >= this.maximum - EPSILON) {

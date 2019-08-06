@@ -38,18 +38,25 @@ class Shape {
   }
 
   /**
+   * @param {Point} p
+   * @param {Intersection} i (optional)
    * @returns {Vector}
    */
-  normalAt(p) {
+  normalAt(p, i) {
     // convert point to object space and normalize vector then calculate with
     // shape's concrete implementation
     const localPoint = this.worldToObject(p);
-    const localNormal = this.localNormalAt(localPoint);
+    const localNormal = this.localNormalAt(localPoint, i);
 
     return this.normalToWorld(localNormal);
   }
 
-  localNormalAt(p) {
+  /**
+   * @param {Point} p
+   * @param {Intersection} i (optional)
+   * @returns {Vector}
+   */
+  localNormalAt(p, i) {
     return vector(p.x, p.y, p.z);
   }
 

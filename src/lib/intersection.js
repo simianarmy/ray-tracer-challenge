@@ -6,11 +6,15 @@ import { EPSILON } from "./math";
  * @constructor
  * @param {Number} t scalar
  * @param {Shape} object
+ * @param {Object} optional uv (for triangles only)
+ *  {Number} u
+ *  {Number} v
  */
-export const Intersection = (t, object) => {
+export const Intersection = (t, object, uv = {}) => {
   return {
     t,
-    object
+    object,
+    ...uv
   };
 };
 
@@ -53,7 +57,7 @@ export const prepareComputations = (is, ray, xs = [is]) => {
     object: is.object,
     point,
     eyev: negate(ray.direction),
-    normalv: is.object.normalAt(point)
+    normalv: is.object.normalAt(point, xs[0])
   };
 
   if (dot(comps.normalv, comps.eyev) < 0) {

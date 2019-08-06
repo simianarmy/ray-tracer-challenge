@@ -6,6 +6,7 @@ import {
   schlick
 } from "./intersection";
 import { Sphere } from "./sphere";
+import { Triangle } from "./triangle";
 import { Plane } from "./plane";
 import { Ray } from "./ray";
 import { point, vector } from "./tuple";
@@ -18,6 +19,13 @@ describe("Intersection", () => {
     const i = Intersection(3.5, s);
     expect(i.t).toBe(3.5);
     expect(i.object).toEqual(s);
+  });
+
+  it("can encapsulate a uv property", () => {
+    const t = new Triangle(point(0, 1, 0), point(-1, 0, 0), point(1, 0, 0));
+    const i = Intersection(3.5, t, {u: 0.2, v: 0.4});
+    expect(i.u).toBe(0.2);
+    expect(i.v).toBe(0.4);
   });
 });
 

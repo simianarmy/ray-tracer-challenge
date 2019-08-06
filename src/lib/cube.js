@@ -22,7 +22,7 @@ class Cube extends Shape {
   /**
    * @returns {Vector}
    */
-  localNormalAt(point) {
+  localNormalAt(point, i) {
     // find component with largest absolute value
     const maxc = Math.max(Math.abs(point.x), Math.abs(point.y), Math.abs(point.z));
 

@@ -5,7 +5,7 @@ import { Intersection } from "./intersection";
 import { Bounds } from "./bounds";
 
 class Plane extends Shape {
-  localNormalAt() {
+  localNormalAt(p, i) {
     return vector(0, 1, 0);
   }
 

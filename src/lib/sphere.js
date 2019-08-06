@@ -26,7 +26,7 @@ class Sphere extends Shape {
     return [Intersection(t1, this), Intersection(t2, this)];
   }
 
-  localNormalAt(p) {
+  localNormalAt(p, i) {
     return sub(p, point(0, 0, 0));
   }
 }

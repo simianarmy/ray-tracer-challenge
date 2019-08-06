@@ -1,8 +1,9 @@
 import axios from "axios";
 
-import { point } from "./tuple";
+import { point, vector } from "./tuple";
 import { Group } from "./group";
 import { Triangle } from "./triangle";
+import { SmoothTriangle } from "./smooth-triangle";
 
 export async function parseObjFromUrl(url) {
   const res = await axios.get(url);
@@ -30,8 +31,10 @@ class Parser {
   constructor() {
     this.ignoredLines = [];
     this.vertices = [null];
+    this.normals = [null];
     this.lastInstruction = null;
     this.lastVertexGroupIndex = 0;
+    this.lastNormalGroupIndex = 0;
     this.defaultGroup = new Group();
     this.activeGroup = this.defaultGroup;
     this.groups = {
@@ -82,40 +85,62 @@ class Parser {
     return this.vertices[startIndex + idx];
   }
 
+  getNormalByIndex(idx) {
+    //console.log("getting vertex by index for ", idx);
+    const startIndex = this.lastNormalGroupIndex;
+    //console.log("indexing", startIndex + idx);
+    return this.normals[startIndex + idx];
+  }
+  /**
+   * @param {Array} parts
+   * @returns {Point}
+   */
   parseVertex(parts) {
-    return point(Number(parts[1].trim()), Number(parts[2].trim()), Number(parts[3].trim()));
+    return point(Number(parts[1]), Number(parts[2]), Number(parts[3]));
+  }
+
+  /**
+   * @param {Array} parts
+   * @returns {Vector}
+   */
+  parseVector(parts) {
+    return vector(Number(parts[1]), Number(parts[2]), Number(parts[3]));
   }
 
   parseFaceParts(parts) {
-    return parts.map(p => {
+    return parts.filter(p => p.length > 0).map(p => {
+      // handle vertex/texture/normal format
       if (p.indexOf('/') !== -1) {
-        return p.split('/')[0];
+        const triple = p.split('/');
+        return {
+          vertex: triple[0],
+          texture: triple[1],
+          normal: triple[2]
+        }
       }
-      return p;
-    }).filter(p => p.length > 0);
-  }
-
-  parseFace(parts) {
-    const vs = this.parseVertex(parts);
-    //console.log("vs", vs);
-    const p1 = this.getVertexByIndex(vs.x);
-    const p2 = this.getVertexByIndex(vs.y);
-    const p3 = this.getVertexByIndex(vs.z);
-    //console.log("parseFace group", group);
-    return new Triangle(p1, p2, p3);
+      return {
+        vertex: p
+      };
+    });
   }
 
   triangulatePolygon(parts) {
     //console.log("triangulate parts", parts);
-    const v1 = this.getVertexByIndex(Number(parts[1]));
+    const v1 = this.getVertexByIndex(Number(parts[1].vertex));
+    const n1 = parts[1].normal ? this.getNormalByIndex(Number(parts[1].normal)) : null;
     const triangles = [];
 
     for (let index = 2; index < parts.length - 1; index++) {
-      const v2 = this.getVertexByIndex(Number(parts[index]));
-      const v3 = this.getVertexByIndex(Number(parts[index+1]));
+      const v2 = this.getVertexByIndex(Number(parts[index].vertex));
+      const v3 = this.getVertexByIndex(Number(parts[index+1].vertex));
 
-      //console.log("triangulate points", v1, v2, v3);
-      triangles.push(new Triangle(v1, v2, v3));
+      if (n1) {
+        const n2 = this.getNormalByIndex(Number(parts[index].normal));
+        const n3 = this.getNormalByIndex(Number(parts[index+1].normal));
+        triangles.push(new SmoothTriangle(v1, v2, v3, n1, n2, n3));
+      } else {
+        triangles.push(new Triangle(v1, v2, v3));
+      }
     }
 
     return triangles;
@@ -139,17 +164,23 @@ class Parser {
         this.lastInstruction = "v";
         break;
 
+      case "vn":
+        if (this.lastInstruction !== "vn") {
+          this.lastNormalGroupIndex = this.normals.length - 1;
+        }
+        const vp = this.parseVector(parts);
+        this.normals.push(vp);
+        this.lastInstruction = "vn";
+        break;
+
       case "f":
         // if polygon
+        //console.log("face", parts);
         const pparts = this.parseFaceParts(parts);
-        if (pparts.length > 4) {
-          // TODO: generalize for all face instructions
-          this.triangulatePolygon(pparts).forEach(triangle => {
-            this.activeGroup.addChild(triangle);
-          });
-        } else {
-          this.activeGroup.addChild(this.parseFace(pparts));
-        }
+        //console.log("face parts", pparts);
+        this.triangulatePolygon(pparts).forEach(triangle => {
+          this.activeGroup.addChild(triangle);
+        });
 
         this.lastInstruction = "f";
         break;

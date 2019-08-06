@@ -58,7 +58,6 @@ export const render = (camera, world, tickFn = null) => {
 
   // TODO: RAF
   for (let y = 0; y < camera.vsize; y++) {
-    console.log("rendering row ", y, " / ", camera.vsize);
     for (let x = 0; x < camera.hsize; x++) {
       const ray = rayForPixel(camera, x, y);
       const color = colorAt(world, ray);

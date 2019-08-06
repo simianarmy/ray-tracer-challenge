@@ -15,17 +15,21 @@ export class Triangle extends Shape {
     this.normal = normalize(cross(this.e2, this.e1));
   }
 
-  localNormalAt(p) {
+  localNormalAt(p, i) {
     return this.normal;
   }
 
-  localIntersect(ray) {
+  /**
+   * Calculates t, u, and v for the localIntersect function
+   * @returns {Object} if intersection found, null if not
+   */
+  localIntersectHelper(ray) {
     // Muller-Trumbore algorithm
     const dirCrossE = cross(ray.direction, this.e2);
     const det = dot(this.e1, dirCrossE);
 
     if (isZero(det)) {
-      return [];
+      return null;
     }
 
     const f = 1.0 / det;
@@ -33,19 +37,33 @@ export class Triangle extends Shape {
     const u = f * dot(p1ToOrigin, dirCrossE);
 
     if (u < 0 || u > 1) {
-      return [];
+      return null;
     }
 
     const originCrossE1 = cross(p1ToOrigin, this.e1);
     const v = f * dot(ray.direction, originCrossE1);
 
     if (v < 0 || (u + v) > 1) {
-      return [];
+      return null;
     }
 
     const t = f * dot(this.e2, originCrossE1);
 
-    return [Intersection(t, this)];
+    return {
+      t,
+      u,
+      v
+    }
+  }
+
+  localIntersect(ray) {
+    const res = this.localIntersectHelper(ray); // ugh
+
+    if (res) {
+      return [Intersection(res.t, this)];
+    }
+
+    return [];
   }
 }
 
