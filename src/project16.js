@@ -30,7 +30,7 @@ import "./App.css";
 const ProjectTitle = "Project 16";
 const HSIZE = 100;
 const VSIZE = 100;
-const RESOLUTION = 2;
+const RESOLUTION = 1;
 const CANVAS_SCALE = 2;
 
 function Project16() {
@@ -61,8 +61,12 @@ function Project16() {
     addParsed(parser);
   }
 
+  let lastY = 0;
   function onRenderTick(x, y) {
-    //console.log("rendered pixel at ", x, y);
+    if (y !== lastY) {
+      console.log("rendered row", y);
+      lastY = y;
+    }
   }
 
   let world = World();
