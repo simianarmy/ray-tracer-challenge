@@ -41,6 +41,26 @@ describe("obj-file", () => {
     expect(t2.p3).toEqualPoint(parser.vertices[4]);
   });
 
+  it("should parse face vertices in OBJ format", () => {
+    const input = "v -1 1 0\n" +
+      "v -1.0000 0 0.0000\n" +
+      "v 1 0 0\n" +
+      "v 1 1 0\n\n" +
+      "f 1/1/1 2/2/2 3/3/3\n" +
+      "f 1/2/3 3/2/2 4/3/2\n";
+
+    const parser = parseObjFile(input);
+    const g = parser.defaultGroup;
+    const t1 = g.shapes[0];
+    const t2 = g.shapes[1];
+    expect(t1.p1).toEqualPoint(parser.vertices[1]);
+    expect(t1.p2).toEqualPoint(parser.vertices[2]);
+    expect(t1.p3).toEqualPoint(parser.vertices[3]);
+    expect(t2.p1).toEqualPoint(parser.vertices[1]);
+    expect(t2.p2).toEqualPoint(parser.vertices[3]);
+    expect(t2.p3).toEqualPoint(parser.vertices[4]);
+  });
+
   it("should parse and triangulate polygons", () => {
     const input = "v -1 1 0\n" +
       "v -1.0000 0 0.0000\n" +
@@ -105,8 +125,17 @@ describe("obj-file", () => {
   });
 
   it("should parse object file from url", async () => {
-    const parser = await parseObjFromUrl("https://groups.csail.mit.edu/graphics/classes/6.837/F03/models/teapot.obj");
+    //const parser = await parseObjFromUrl("https://groups.csail.mit.edu/graphics/classes/6.837/F03/models/teapot.obj");
     //console.log(parser);
+    //expect(parser.vertices.length).toBeTruthy();
+    //const parser = await parseObjFromUrl("https://graphics.cs.utah.edu/courses/cs6620/fall2013/prj05/teapot-low.obj");
+    const parser = await parseObjFromUrl("https://people.sc.fsu.edu/~jburkardt/data/obj/dodecahedron.obj")
+
+    const group = parser.getGroupByName("Object001");
+    const t = group.shapes[0];
+    expect(t.p1).toEqualPoint(point(0.57735, -0.57735, .57735));
+    expect(t.p2).toEqualPoint(point(0.934172, -0.356822, 0));
+    expect(t.p3).toEqualPoint(point(0.934172, 0.356822, 0));
     expect(parser.vertices.length).toBeTruthy();
   });
 });

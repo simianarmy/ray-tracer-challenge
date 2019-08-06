@@ -62,6 +62,11 @@ class Parser {
       }
     });
 
+    // no reason for extra group nexting
+    if (res.shapes.length === 1) {
+      return res.shapes[0];
+    }
+
     return res;
   }
 
@@ -73,12 +78,21 @@ class Parser {
   getVertexByIndex(idx) {
     //console.log("getting vertex by index for ", idx);
     const startIndex = this.lastVertexGroupIndex;
-    //console.log("startIndex", startIndex);
+    //console.log("indexing", startIndex + idx);
     return this.vertices[startIndex + idx];
   }
 
   parseVertex(parts) {
     return point(Number(parts[1].trim()), Number(parts[2].trim()), Number(parts[3].trim()));
+  }
+
+  parseFaceParts(parts) {
+    return parts.map(p => {
+      if (p.indexOf('/') !== -1) {
+        return p.split('/')[0];
+      }
+      return p;
+    }).filter(p => p.length > 0);
   }
 
   parseFace(parts) {
@@ -109,7 +123,8 @@ class Parser {
 
   parseLine(line) {
     //console.log("parsing line", line);
-    const parts = line.split(' ').filter(c => c !== "\n").map(p => p.trim());
+    const parts = line.split(/(\s+)/).filter( e => e.trim().length > 0)
+      .filter(c => c !== "\n").map(p => p.trim());
     const command = parts[0];
 
     //console.log("parts", parts);
@@ -126,13 +141,14 @@ class Parser {
 
       case "f":
         // if polygon
-        if (parts.length > 4) {
+        const pparts = this.parseFaceParts(parts);
+        if (pparts.length > 4) {
           // TODO: generalize for all face instructions
-          this.triangulatePolygon(parts).forEach(triangle => {
+          this.triangulatePolygon(pparts).forEach(triangle => {
             this.activeGroup.addChild(triangle);
           });
         } else {
-          this.activeGroup.addChild(this.parseFace(parts));
+          this.activeGroup.addChild(this.parseFace(pparts));
         }
 
         this.lastInstruction = "f";

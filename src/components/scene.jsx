@@ -21,7 +21,8 @@ export class Scene extends React.Component {
     const { camera, world, title, canvasScale } = this.props;
 
     // synchronous render, result is fully rendered world
-    const canvas = render(camera, world);
+    console.log("*** casting rays ***", camera, world);
+    const canvas = render(camera, world, this.props.renderTickCb);
 
     const previewCanvas = this.previewCanvas.current;
     const scaleCanvas = this.scaledCanvas.current;

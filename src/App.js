@@ -11,6 +11,7 @@ import Project12 from "./project12";
 import Project13 from "./project13";
 import Project14 from "./project14";
 import Project15 from "./project15";
+import Project16 from "./project16";
 import "./App.css";
 
 const projects = [
@@ -29,7 +30,8 @@ const projects = [
   Project12,
   Project13,
   Project14,
-  Project15
+  Project15,
+  Project16
 ];
 
 function App() {
