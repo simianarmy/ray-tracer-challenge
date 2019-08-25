@@ -34,7 +34,7 @@ import "./App.css";
 const ProjectTitle = "Project 16";
 const HSIZE = 100;
 const VSIZE = 100;
-const RESOLUTION = 1;
+const RESOLUTION = 0.5;
 const CANVAS_SCALE = 2;
 
 function Project16() {
@@ -43,7 +43,7 @@ function Project16() {
     console.log("extents", parser.getExtents());
     const objectGroup = parser.toGroup();
 
-    objectGroup.setTransform(multiply(multiply(translation(-1, 1, 8), rotationX(-degreesToRadians(120))), scaling(.8, .8, .8)));
+    //objectGroup.setTransform(multiply(multiply(translation(0, 1, 0), rotationX(-degreesToRadians(120))), scaling(2, 2, 2)));
     objectGroup.shapes.forEach(s => s.material.pattern = new SolidPattern(Color.Red));
 
     world.objects.push(objectGroup);
@@ -62,7 +62,7 @@ function Project16() {
 
   function updateObjData() {
     const input = document.querySelector("#objFileData").value;
-    const parser = parseObjFile(input);
+    const parser = parseObjFile(input, {normalize: true});
     addParsed(parser);
   }
 
@@ -75,17 +75,19 @@ function Project16() {
   }
 
   let world = World();
-  const plane = new Plane();
+  const floor = new Plane();
   //plane.material.setTransformation(multiply(rotationY(0.785), scaling(2, 2, 2)));
-  plane.setTransform(translation(0, -1, 0));
+  floor.setTransform(translation(0, -1, 0));
+  const backWall = new Plane();
+  backWall.setTransform(multiply(translation(0, 0, 6), rotationX(Math.PI/2)));
 
-  world.objects = [plane];
-  world.lightSource = PointLight(point(-5, 10, -18), Color(1, 1, 1));
+  world.objects = [floor, backWall];
+  world.lightSource = PointLight(point(-1, 5, -6), Color(1, 1, 1));
 
   const camera = Camera(HSIZE * RESOLUTION, VSIZE * RESOLUTION, Math.PI/3);
   camera.transform = viewTransform(
-    point(0, 4, -20),
-    point(0, 1, 0),
+    point(0, 0, -3),
+    point(0, 0, 0),
     vector(0, 1, 0)
   );
 

@@ -29,11 +29,10 @@ describe("obj-file", () => {
     "v 1 1 0";
 
     const parser = parseObjFile(input, {normalize: true});
-    console.log("vertices", parser.vertices);
     expect(parser.vertices[1]).toEqualPoint(point(-1, 0.5, 0));
-    //expect(parser.vertices[2]).toEqualPoint(point(-1, 0.5, 0));
-    //expect(parser.vertices[3]).toEqualPoint(point(1, 0, 0));
-    //expect(parser.vertices[4]).toEqualPoint(point(1, 1, 0));
+    expect(parser.vertices[2]).toEqualPoint(point(-1, 0, 0));
+    expect(parser.vertices[3]).toEqualPoint(point(1, -0.5, 0));
+    expect(parser.vertices[4]).toEqualPoint(point(1, 0.5, 0));
   });
 
   it("should parse triangle faces", () => {
@@ -45,7 +44,7 @@ describe("obj-file", () => {
       "f 1 3 4\n";
 
     const parser = parseObjFile(input);
-    const g = parser.defaultGroup;
+    const g = parser.getDefaultGroup();
     const t1 = g.shapes[0];
     const t2 = g.shapes[1];
     expect(t1.p1).toEqualPoint(parser.vertices[1]);
@@ -65,7 +64,7 @@ describe("obj-file", () => {
       "f 1/2/3 3/2/2 4/3/2\n";
 
     const parser = parseObjFile(input);
-    const g = parser.defaultGroup;
+    const g = parser.getDefaultGroup();
     const t1 = g.shapes[0];
     const t2 = g.shapes[1];
     expect(t1.p1).toEqualPoint(parser.vertices[1]);
@@ -87,7 +86,7 @@ describe("obj-file", () => {
       "f 1/0/3 2/102/1 3/14/2\n";
 
     const parser = parseObjFile(input);
-    const g = parser.defaultGroup;
+    const g = parser.getDefaultGroup();
     const t1 = g.shapes[0];
     const t2 = g.shapes[1];
     expect(t1).toBeInstanceOf(SmoothTriangle);
@@ -111,7 +110,7 @@ describe("obj-file", () => {
       "f 1 2 3 4 5\n";
 
     const parser = parseObjFile(input);
-    const [t1, t2, t3] = parser.defaultGroup.shapes;
+    const [t1, t2, t3] = parser.getDefaultGroup().shapes;
 
     expect(t1.p1).toEqualPoint(parser.vertices[1]);
     expect(t1.p2).toEqualPoint(parser.vertices[2]);

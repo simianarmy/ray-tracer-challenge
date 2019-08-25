@@ -50,7 +50,6 @@ class Parser {
     this.lastInstruction = null;
     this.lastVertexGroupIndex = 0;
     this.lastNormalGroupIndex = 0;
-    this.groupData = [];
     this.defaultGroup = new GroupData();
     this.activeGroup = this.defaultGroup;
     this.normalize = opts.normalize;
@@ -59,7 +58,15 @@ class Parser {
     };
   }
 
+  getDefaultGroup() {
+    return this.groups.default.group;
+  }
+
   getGroupByName(name) {
+    return this.getGroupDataByName(name).group;
+  }
+
+  getGroupDataByName(name) {
     return this.groups[name];
   }
 
@@ -71,6 +78,9 @@ class Parser {
     if (this.normalize) {
       this.normalizeVertices();
     }
+    /**
+     * TODO: Get this to work!
+     */
     this.addTriangles();
   }
 
@@ -111,7 +121,7 @@ class Parser {
     return res;
   }
 
-  createGroup(name) {
+  createGroupData(name) {
     this.groups[name] = new GroupData();
     return this.groups[name];
   }
@@ -131,16 +141,24 @@ class Parser {
     }
   }
 
+  /**
+   * TODO: Get this to work!
+   */
   addTriangles() {
     //console.log("face parts", pparts);
     Object.keys(this.groups).forEach(gname => {
       const gd = this.groups[gname];
-      console.log("adding triangles for group", gd);
-      this.activeGroup = gd;
-      this.triangulatePolygon(gd.instructions).forEach(triangle => {
-        console.log("adding triangle", triangle);
-        gd.addTriangle(triangle);
-      });
+
+      if (gd.instructions.length) {
+        this.activeGroup = gd;
+
+        //console.log("parsing face instructions", gd.instructions);
+        gd.instructions.forEach(face => {
+          this.triangulatePolygon(face).forEach(triangle => {
+            gd.addTriangle(triangle);
+          });
+        });
+      }
     });
   }
 
@@ -194,7 +212,7 @@ class Parser {
    * @returns {Array[Triangle]}
    */
   triangulatePolygon(parts) {
-    console.log("triangulate parts", parts);
+    //console.log("triangulating", parts);
     const v1 = this.getVertexByIndex(Number(parts[1].vertex));
     const n1 = parts[1].normal ? this.getNormalByIndex(Number(parts[1].normal)) : null;
     const triangles = [];
@@ -253,10 +271,10 @@ class Parser {
 
       case "g":
         const groupName = parts[1];
-        let namedGroup = this.getGroupByName(groupName);
+        let namedGroup = this.getGroupDataByName(groupName);
 
         if (!namedGroup) {
-          namedGroup = this.createGroup(groupName);
+          namedGroup = this.createGroupData(groupName);
         }
 
         this.activeGroup = namedGroup;
