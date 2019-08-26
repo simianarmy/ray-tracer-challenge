@@ -1,6 +1,10 @@
 /**
  * Project 16
- * Demonstrate use of Groups by rendering a hexagon shape
+ * Demonstrate rendering obj data
+ *
+ * Teapot
+ * https://graphics.cs.utah.edu/courses/cs6620/fall2013/prj05/teapot-low.obj
+ *
  */
 import React from "react";
 
@@ -36,6 +40,7 @@ const CANVAS_SCALE = 2;
 function Project16() {
 
   function addParsed(parser) {
+    console.log("extents", parser.getExtents());
     const objectGroup = parser.toGroup();
 
     objectGroup.setTransform(multiply(multiply(translation(-1, 1, 8), rotationX(-degreesToRadians(120))), scaling(.8, .8, .8)));

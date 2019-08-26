@@ -22,6 +22,20 @@ describe("obj-file", () => {
     expect(parser.vertices[4]).toEqualPoint(point(1, 1, 0));
   });
 
+  it("should normalize vertex records if requested", () => {
+    const input = "v -1 1 0\n" +
+    "v -1.0000 0.5000 0.0000\n" +
+    "v 1 0 0\n" +
+    "v 1 1 0";
+
+    const parser = parseObjFile(input, {normalize: true});
+    console.log("vertices", parser.vertices);
+    expect(parser.vertices[1]).toEqualPoint(point(-1, 0.5, 0));
+    //expect(parser.vertices[2]).toEqualPoint(point(-1, 0.5, 0));
+    //expect(parser.vertices[3]).toEqualPoint(point(1, 0, 0));
+    //expect(parser.vertices[4]).toEqualPoint(point(1, 1, 0));
+  });
+
   it("should parse triangle faces", () => {
     const input = "v -1 1 0\n" +
       "v -1.0000 0 0.0000\n" +
