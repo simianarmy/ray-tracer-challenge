@@ -2,8 +2,9 @@
  * Project 16
  * Demonstrate rendering obj data
  *
- * Teapot
+ * Teapot (low-res)
  * https://graphics.cs.utah.edu/courses/cs6620/fall2013/prj05/teapot-low.obj
+ * Flip X 90
  *
  */
 import React from "react";
@@ -26,15 +27,16 @@ import {
   SolidPattern,
   degreesToRadians
 } from "./lib/index";
-import { parseObjFile, parseObjFromUrl } from "./lib/obj-file";
+import { parseObjFromUrl } from "./lib/obj-file";
 import { Scene } from "./components/scene";
+import { ObjFileInput } from "./components/objfile-input";
 import "./App.css";
 
 // Control resolution = render time
 const ProjectTitle = "Project 16";
 const HSIZE = 100;
 const VSIZE = 100;
-const RESOLUTION = 0.5;
+const RESOLUTION = 1;
 const CANVAS_SCALE = 2;
 
 function Project16() {
@@ -43,7 +45,7 @@ function Project16() {
     console.log("extents", parser.getExtents());
     const objectGroup = parser.toGroup();
 
-    //objectGroup.setTransform(multiply(multiply(translation(0, 1, 0), rotationX(-degreesToRadians(120))), scaling(2, 2, 2)));
+    objectGroup.setTransform(rotationX(-degreesToRadians(120)));
     objectGroup.shapes.forEach(s => s.material.pattern = new SolidPattern(Color.Red));
 
     world.objects.push(objectGroup);
@@ -57,12 +59,6 @@ function Project16() {
     const url = document.querySelector("#objFileUrl").value;
     console.log("object file url", url);
     const parser = await parseObjFromUrl(url);
-    addParsed(parser);
-  }
-
-  function updateObjData() {
-    const input = document.querySelector("#objFileData").value;
-    const parser = parseObjFile(input, {normalize: true});
     addParsed(parser);
   }
 
@@ -86,7 +82,7 @@ function Project16() {
 
   const camera = Camera(HSIZE * RESOLUTION, VSIZE * RESOLUTION, Math.PI/3);
   camera.transform = viewTransform(
-    point(0, 0, -3),
+    point(0, 1, -3),
     point(0, 0, 0),
     vector(0, 1, 0)
   );
@@ -103,8 +99,7 @@ function Project16() {
           <input type="submit" value="Update" onClick={updateObjUrl} style={{marginLeft: "16px"}}/>
         </div>
         <h3>Enter OBJ input below</h3>
-        <textarea width="400" height="600" id="objFileData" style={{width: 400, height: 300}}/>
-        <input type="submit" value="Update" onClick={updateObjData} />
+        <ObjFileInput onChange={addParsed} />
         {loaded &&
         <Scene width="700" height="550" world={sceneWorld} camera={camera} title={ProjectTitle} canvasScale={CANVAS_SCALE} renderTickCb={onRenderTick} />
         }
