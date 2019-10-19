@@ -6,6 +6,10 @@
  * https://graphics.cs.utah.edu/courses/cs6620/fall2013/prj05/teapot-low.obj
  * Flip X 90
  *
+ * Dog
+ * https://free3d.com/3d-model/dog-v1--722788.html
+* Flip Y 90
+ *
  */
 import React from "react";
 
@@ -45,7 +49,7 @@ function Project16() {
     console.log("extents", parser.getExtents());
     const objectGroup = parser.toGroup();
 
-    objectGroup.setTransform(rotationX(-degreesToRadians(120)));
+    objectGroup.setTransform(rotationY(-degreesToRadians(100)));
     objectGroup.shapes.forEach(s => s.material.pattern = new SolidPattern(Color.Red));
 
     world.objects.push(objectGroup);
