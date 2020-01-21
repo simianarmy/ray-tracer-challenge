@@ -1,0 +1,8 @@
+name: Node CI
+on: push
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: npm install, build, and test
+      run: echo O hi Marc!
